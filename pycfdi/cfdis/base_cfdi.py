@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from ..utils import normalize_dict_keys
+from ..parsing import normalize_dict_keys
 
 class CFDI(ABC):
 

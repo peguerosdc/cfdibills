@@ -1,47 +1,32 @@
-import re
-
-_name_pattern = re.compile(r'(.)([A-Z][a-z]+)')
-_snake_pattern = re.compile(r'([a-z0-9])([A-Z])')
-
-def _camel_to_snake(camelcase: str) -> str:
+def get_uuid(cfdi: dict) -> str:
     """
-    Converts a camelCase string to a snake_case string
-    Source: https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
-
-    Args:
-        camelcase: string to convert
-    
-    Returns: snake_cased string
+    Gets the UUID (folio fiscal) from a CFDI
     """
-    camelcase = _name_pattern.sub(r'\1_\2', camelcase)
-    return _snake_pattern.sub(r'\1_\2', camelcase).lower()
+    for complement in cfdi["complemento"]:
+        timbres = complement.get("timbre_fiscal_digital", [])
+        for timbre in timbres:
+            if "uuid" in timbre:
+                return timbre["uuid"]
+    return None
 
-def normalize_dict_keys(ugly_dict: dict) -> dict:
+def get_fecha_certificacion(cfdi: dict) -> str:
     """
-    Maps the raw keys of a xmlschema to human readable keys
-
-    xmlschema returns a dict with keys that:
-    
-    * begin with "@" when they are leaf nodes
-    * begin with "cfdi:", "tfd:" or similar when they are nodes
-    * contain "xmlns" and "xsi" when are namespace definition
-    * are written in camelCase as defined by SAT's xsd
-
-    So all of these are normalized to plain snake_case strings
+    Gets fecha de certificacion from a CFDI
     """
-    result = dict()
-    # normalization techniques of items where:
-    # * if the item is a dictionary, normalize its children
-    # * if it is an array, normalize every item in it
-    normalization = dict()
-    normalization[list] = lambda x: [normalize_dict_keys(y) for y in x]
-    normalization[dict] = lambda x: normalize_dict_keys(x)
-    # normalize key by key in a DFS way
-    for key, value in ugly_dict.items():
-        # namespaces are not part of cfdi's, so they are omitted
-        if "xmlns" not in key and "xsi" not in key:
-            # get the normalized version of this key removing unwanted chars
-            new_key = _camel_to_snake(key[1:] if "@" in key else key.split(":")[-1])
-            # normalize the item
-            result[new_key] = normalization[type(value)](value) if type(value) in normalization else value
-    return result
+    for complement in cfdi["complemento"]:
+        timbres = complement.get("timbre_fiscal_digital", [])
+        for timbre in timbres:
+            if "fecha_timbrado" in timbre:
+                return timbre["fecha_timbrado"]
+    return None
+
+def get_pac_certificado(cfdi: dict) -> str:
+    """
+    Gets the PAC that verified from a CFDI
+    """
+    for complement in cfdi["complemento"]:
+        timbres = complement.get("timbre_fiscal_digital", [])
+        for timbre in timbres:
+            if "rfc_prov_certif" in timbre:
+                return timbre["rfc_prov_certif"]
+    return None
