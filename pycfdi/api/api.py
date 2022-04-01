@@ -12,6 +12,9 @@ class SATApi:
         # call web service
         raw_response = self._client.service.Consulta(args)
         # map to a plain dictionary to hide suds implementation
+        return self._response_to_dict(raw_response)
+    
+    def _response_to_dict(self, raw_response) -> dict:
         response = dict()
         for key, value in dict(raw_response).items():
             response[key] = str(value) if value else None
