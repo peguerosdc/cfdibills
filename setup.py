@@ -17,7 +17,7 @@ setup(
     license='LGPGLv3',
     license_file="LICENSE",
     author="Carlos Pegueros",
-    author_email='pegueros@gmail.com',
+    author_email='peguerosdc@gmail.com',
     packages=find_packages('cfdibilly'),
     package_dir={'': 'cfdibilly'},
     package_data={

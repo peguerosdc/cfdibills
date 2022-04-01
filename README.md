@@ -6,6 +6,15 @@ Utility to inspect and validate CFDI (Mexican invoice) versions 3.3 and 4.0
 * Check if an XML file is a valid CFDI
 * Load a CFDI into a python dictionary
 * Gather the status of a CFDI from SAT
+* **Doesn't require** additional dependencies to read XML like libxml2-dev, libxslt-dev
+
+## Installation
+
+Run:
+
+```sh
+pip install cfdibilly
+```
 
 ## Examples
 
