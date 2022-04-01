@@ -1,10 +1,15 @@
 from suds.client import Client
+from suds.cache import DocumentCache
+from pathlib import Path
 
 class SATApi:
 
     def __init__(self):
+        # cache the information of this service
         wsdl = "https://consultaqr.facturaelectronica.sat.gob.mx/consultacfdiservice.svc?wsdl"
-        self._client = Client(wsdl)
+        # I chose DocumentCache because schemas are stored in a human-readable xml format
+        cache_path = Path(__file__).parent / "cache"
+        self._client = Client(wsdl, cache=DocumentCache(location=cache_path))
 
     def verify_cfdi(self, uuid, rfc_emisor, rfc_receptor, total_facturado):
         # build string
