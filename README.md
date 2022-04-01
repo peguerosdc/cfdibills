@@ -1,4 +1,6 @@
 # cfdibilly
+[![PyPI Latest Release](https://img.shields.io/pypi/v/cfdibilly.svg)](https://pypi.org/project/cfdibilly/)
+
 Utility to inspect and validate CFDI (Mexican invoice) versions 3.3 and 4.0
 
 ## Features
