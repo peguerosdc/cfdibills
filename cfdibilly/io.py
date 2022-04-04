@@ -1,5 +1,5 @@
 from typing import Union
-from .cfdis import cfdi_schemas
+from cfdibilly.cfdis import cfdi_schemas
 
 def read_xml(path: str) -> dict:
     """

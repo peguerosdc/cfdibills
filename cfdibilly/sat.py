@@ -1,6 +1,6 @@
-from .api import sat_api
-from .utils.parsing import normalize_dict_keys
-from .utils.cfdiutils import get_uuid
+from cfdibilly.api import sat_api
+from cfdibilly.utils.parsing import normalize_dict_keys
+from cfdibilly.utils.cfdiutils import get_uuid
 
 def verify(cfdi: dict = None,
     uuid: str = None,
