@@ -30,3 +30,25 @@ def get_pac_certificado(cfdi: dict) -> str:
             if "rfc_prov_certif" in timbre:
                 return timbre["rfc_prov_certif"]
     return None
+
+def get_total_iva(cfdi: dict) -> float:
+    """
+    Calculate the total IVA payed in the given cfdi
+    """
+    taxes = cfdi.get("impuestos", dict()).get("traslados", dict()).get("traslado", [])
+    iva = 0
+    for tax in taxes:
+        if tax["impuesto"] == "002":
+            iva += tax["importe"]
+    return iva
+
+def get_total_ieps(cfdi: dict) -> float:
+    """
+    Calculate the total IEPS payed in the given cfdi
+    """
+    taxes = cfdi.get("impuestos", dict()).get("traslados", dict()).get("traslado", [])
+    ieps = 0
+    for tax in taxes:
+        if tax["impuesto"] == "003":
+            ieps += tax["importe"]
+    return ieps

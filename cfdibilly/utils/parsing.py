@@ -1,3 +1,4 @@
+from decimal import Decimal
 import re
 
 _name_pattern = re.compile(r'(.)([A-Z][a-z]+)')
@@ -31,11 +32,13 @@ def normalize_dict_keys(ugly_dict: dict) -> dict:
     """
     result = dict()
     # normalization techniques of items where:
+    # * if the item is a Decimal, map it to a float python number
     # * if the item is a dictionary, normalize its children
     # * if it is an array, normalize every item in it
     normalization = dict()
     normalization[list] = lambda x: [normalize_dict_keys(y) for y in x]
     normalization[dict] = lambda x: normalize_dict_keys(x)
+    normalization[Decimal] = lambda x: float(x)
     # normalize key by key in a DFS way
     for key, value in ugly_dict.items():
         # namespaces are not part of cfdi's, so they are omitted
