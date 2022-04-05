@@ -5,8 +5,7 @@ Utility to inspect and validate CFDI (Mexican invoice) versions 3.3 and 4.0
 
 ## Features
 
-* Check if an XML file is a valid CFDI
-* Load a CFDI into a python dictionary
+* Load a CFDI (any XML) into a python dictionary
 * Gather the status of a CFDI from SAT
 * **Doesn't require** additional dependencies to read XML like libxml2-dev, libxslt-dev
 
@@ -26,9 +25,8 @@ You can load a verify an invoice directly from its XML:
 import cfdibilly
 
 file = "invoice.xml"
-if cfdibilly.is_cfdi(file):
-    cfdi = cfdibilly.read_xml(file)
-    status = cfdibilly.verify(cfdi)
+cfdi = cfdibilly.read_xml(file)
+status = cfdibilly.verify(cfdi)
 ````
 
 Or you can verify an invoice manually:

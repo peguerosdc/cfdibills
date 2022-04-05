@@ -1,5 +1,5 @@
-from typing import Union
-from cfdibilly.cfdis import cfdi_schemas
+import xmltodict
+from .utils.parsing import normalize_dict_keys
 
 def read_xml(path: str) -> dict:
     """
@@ -10,20 +10,6 @@ def read_xml(path: str) -> dict:
         validate: if the xml should be tested to be a valid CFDI or not
     """
     # Try for the possible cfdi versions
-    for cfdi_version in cfdi_schemas:
-        if cfdi_version.validate(path):
-            return cfdi_version.read(path)
-    raise ValueError(f"File '{path}' is not a valid cfid")
-
-def is_cfdi(path: str) -> Union[str, bool]:
-    """
-    Validates if the given xml is a valid CFDI or not
-
-    Args:
-        path: path to the xml to validate
-    """
-    # Try for the possible cfdi versions
-    for cfdi_version in cfdi_schemas:
-        if cfdi_version.validate(path):
-            return cfdi_version.version
-    return False
+    with open(path, 'rb') as f:
+        raw_xml = xmltodict.parse(f, dict_constructor=dict)
+        return normalize_dict_keys(raw_xml)

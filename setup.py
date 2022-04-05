@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # How to manage version bumping: https://realpython.com/pypi-publish-python-package/#versioning-your-package
 setup(
     name='cfdibilly',
-    version='0.1.0.a6',
+    version='0.1.0.a8',
     description="Read and verify CFDI invoices via SAT's web service",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -26,6 +26,6 @@ setup(
     keywords=["cfdi", "sat", "client", "mexico"],
     install_requires=[
         "suds==1.0.0",
-        "xmlschema==1.10.0",
+        "xmltodict==0.12.0",
     ],
 )
