@@ -11,5 +11,8 @@ def read_xml(path: str) -> dict:
     """
     # Try for the possible cfdi versions
     with open(path, 'rb') as f:
-        raw_xml = xmltodict.parse(f, dict_constructor=dict)
-        return normalize_dict_keys(raw_xml)
+        try:
+            raw_xml = xmltodict.parse(f, dict_constructor=dict)
+            return normalize_dict_keys(raw_xml)["comprobante"]
+        except:
+            raise ValueError(f"Could not read '{path}'. Make sure it is a valid CFDI.")
