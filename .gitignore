@@ -133,3 +133,6 @@ dmypy.json
 
 # examples and cfdis to test
 data
+
+# from pycharm
+.idea

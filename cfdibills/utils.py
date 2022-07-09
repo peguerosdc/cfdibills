@@ -1,8 +1,9 @@
 from decimal import Decimal
 import re
 
-_name_pattern = re.compile(r'(.)([A-Z][a-z]+)')
-_snake_pattern = re.compile(r'([a-z0-9])([A-Z])')
+_name_pattern = re.compile(r"(.)([A-Z][a-z]+)")
+_snake_pattern = re.compile(r"([a-z0-9])([A-Z])")
+
 
 def _camel_to_snake(camelcase: str) -> str:
     """
@@ -11,18 +12,19 @@ def _camel_to_snake(camelcase: str) -> str:
 
     Args:
         camelcase: string to convert
-    
+
     Returns: snake_cased string
     """
-    camelcase = _name_pattern.sub(r'\1_\2', camelcase)
-    return _snake_pattern.sub(r'\1_\2', camelcase).lower()
+    camelcase = _name_pattern.sub(r"\1_\2", camelcase)
+    return _snake_pattern.sub(r"\1_\2", camelcase).lower()
+
 
 def normalize_dict_keys(ugly_dict: dict) -> dict:
     """
     Maps the raw keys of a xmlschema to human readable keys
 
     xmlschema returns a dict with keys that:
-    
+
     * begin with "@" when they are leaf nodes
     * begin with "cfdi:", "tfd:" or similar when they are nodes
     * contain "xmlns" and "xsi" when are namespace definition
@@ -46,5 +48,9 @@ def normalize_dict_keys(ugly_dict: dict) -> dict:
             # get the normalized version of this key removing unwanted chars
             new_key = _camel_to_snake(key[1:] if "@" in key else key.split(":")[-1])
             # normalize the item
-            result[new_key] = normalization[type(value)](value) if type(value) in normalization else value
+            result[new_key] = (
+                normalization[type(value)](value)
+                if type(value) in normalization
+                else value
+            )
     return result
