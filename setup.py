@@ -1,7 +1,7 @@
+from pathlib import Path
 from typing import List
 
-from setuptools import setup, find_packages
-from pathlib import Path
+from setuptools import find_packages, setup
 
 # The directory containing this file
 HERE = Path(__file__).parent
@@ -21,7 +21,7 @@ def requirements_from_pip(filename: str) -> List[str]:
 # How to manage version bumping: https://realpython.com/pypi-publish-python-package/#versioning-your-package
 setup(
     name="cfdibills",
-    version="0.1.0.a10",
+    version="0.2.0.a01",
     description="Read and verify CFDI invoices via SAT's web service",
     long_description=README,
     long_description_content_type="text/markdown",

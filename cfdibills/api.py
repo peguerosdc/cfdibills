@@ -1,11 +1,15 @@
 from dataclasses import dataclass
 
-import xmltodict
 import requests
+import xmltodict
 
 
 @dataclass
 class SATConsultaResponse:
+    """
+    Encloses the response of the ConsultaCFDIService web service when called with a Consulta action
+    """
+
     codigo_estatus: str
     es_cancelable: str
     estado: str
@@ -13,9 +17,7 @@ class SATConsultaResponse:
     validacion_efos: str
 
 
-def _call_sat(
-    uuid: str, rfc_emisor: str, rfc_receptor: str, total_facturado: float
-) -> dict:
+def _call_sat(uuid: str, rfc_emisor: str, rfc_receptor: str, total_facturado: float) -> dict:
     """
     Sends a SOAP request to SAT's web service to get the status of a CFDI
 
@@ -43,9 +45,7 @@ def _call_sat(
         </soapenv:Body>
     </soapenv:Envelope>
     """
-    url = (
-        "https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?wsdl"
-    )
+    url = "https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?wsdl"
     headers = {
         "content-type": 'text/xml;charset="utf-8"',
         "SOAPAction": "http://tempuri.org/IConsultaCFDIService/Consulta",
@@ -53,13 +53,11 @@ def _call_sat(
     response = requests.post(url, data=body, headers=headers)
     data = response.content
     if response.status_code != 200:
-        raise ValueError(f"An error occured when verifying with SAT. Response: {data}")
+        raise ValueError(f"An error occurred when verifying with SAT. Response: {data}")
     return xmltodict.parse(data)
 
 
-def consulta_cfdi_service(
-    uuid: str, rfc_emisor: str, rfc_receptor: str, total_facturado: float
-) -> SATConsultaResponse:
+def consulta_cfdi_service(uuid: str, rfc_emisor: str, rfc_receptor: str, total_facturado: float) -> SATConsultaResponse:
     """
     Gets the status of the given CFDI by calling SAT's web service.
 
@@ -85,6 +83,4 @@ def consulta_cfdi_service(
             result["a:ValidacionEFOS"],
         )
     except KeyError:
-        raise ValueError(
-            f"The response from SAT was not in a known format. Response: {data}"
-        )
+        raise ValueError(f"The response from SAT was not in a known format. Response: {data}")

@@ -1,337 +1,19 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
-from typing import List, Optional, Dict, Union
+from typing import Dict, List, Optional, Union
 from uuid import UUID
 
 from pydantic import BaseModel, validator
 
-
-def validate_length(value: str, min_length: int, max_length: int):
-    length = len(value)
-    if not (min_length <= length < max_length):
-        raise ValueError(f"{length=} but {min_length=} and {max_length=}")
-
-
-def dict2list(original: Dict) -> List:
-    if isinstance(original, dict):
-        result = []
-        for key in original.keys():
-            temp = original[key]
-            if isinstance(temp, dict):
-                result += [{**temp, "tipo": key}]
-            elif isinstance(temp, list):
-                result += [{**t, "tipo": key} for t in temp]
-    else:
-        result = original
-    return result
-
-
-class UsoCFDI(str, Enum):
-    #: Adquisición de mercancías
-    G01 = "G01"
-    #: Devoluciones, descuentos o bonificaciones
-    G02 = "G02"
-    #: Gastos en general
-    G03 = "G03"
-    #: Construcciones
-    I01 = "I01"
-    #: Mobiliario y equipo de oficina por inversiones
-    I02 = "I02"
-    #: Equipo de transporte
-    I03 = "I03"
-    #: Equipo de cómputo y accesorios
-    I04 = "I04"
-    #: Dados, troqueles, moldes, matrices y herramental
-    I05 = "I05"
-    #: Comunicaciones telefónicas
-    I06 = "I06"
-    #: Comunicaciones satelitales
-    I07 = "I07"
-    #: Otra maquinaria y equipo
-    I08 = "I08"
-    #: Honorarios médicos, dentales y gastos hospitalarios.
-    D01 = "D01"
-    #: Gastos médicos por incapacidad o discapacidad
-    D02 = "D02"
-    #: Gastos funerales.
-    D03 = "D03"
-    #: Donativos.
-    D04 = "D04"
-    #: Intereses reales efectivamente pagados por créditos hipotecarios (casa habitación).
-    D05 = "D05"
-    #: Aportaciones voluntarias al SAR.
-    D06 = "D06"
-    #: Primas por seguros de gastos médicos.
-    D07 = "D07"
-    #: Gastos de transportación escolar obligatoria.
-    D08 = "D08"
-    #: Depósitos en cuentas para el ahorro, primas que tengan como base planes de pensiones.
-    D09 = "D09"
-    #: Pagos por servicios educativos (colegiaturas)
-    D10 = "D10"
-    #: Por definir
-    P01 = "P01"
-    #: Sin efectos fiscales
-    S01 = "S01"
-    #: Pagos
-    CP01 = "CP01"
-    #: Nómina
-    CN01 = "CN01"
-
-
-class Pais(str, Enum):
-    AFG = "AFG"
-    ALA = "ALA"
-    ALB = "ALB"
-    DEU = "DEU"
-    AND = "AND"
-    AGO = "AGO"
-    AIA = "AIA"
-    ATA = "ATA"
-    ATG = "ATG"
-    SAU = "SAU"
-    DZA = "DZA"
-    ARG = "ARG"
-    ARM = "ARM"
-    ABW = "ABW"
-    AUS = "AUS"
-    AUT = "AUT"
-    AZE = "AZE"
-    BHS = "BHS"
-    BGD = "BGD"
-    BRB = "BRB"
-    BHR = "BHR"
-    BEL = "BEL"
-    BLZ = "BLZ"
-    BEN = "BEN"
-    BMU = "BMU"
-    BLR = "BLR"
-    MMR = "MMR"
-    BOL = "BOL"
-    BIH = "BIH"
-    BWA = "BWA"
-    BRA = "BRA"
-    BRN = "BRN"
-    BGR = "BGR"
-    BFA = "BFA"
-    BDI = "BDI"
-    BTN = "BTN"
-    CPV = "CPV"
-    KHM = "KHM"
-    CMR = "CMR"
-    CAN = "CAN"
-    QAT = "QAT"
-    BES = "BES"
-    TCD = "TCD"
-    CHL = "CHL"
-    CHN = "CHN"
-    CYP = "CYP"
-    COL = "COL"
-    COM = "COM"
-    PRK = "PRK"
-    KOR = "KOR"
-    CIV = "CIV"
-    CRI = "CRI"
-    HRV = "HRV"
-    CUB = "CUB"
-    CUW = "CUW"
-    DNK = "DNK"
-    DMA = "DMA"
-    ECU = "ECU"
-    EGY = "EGY"
-    SLV = "SLV"
-    ARE = "ARE"
-    ERI = "ERI"
-    SVK = "SVK"
-    SVN = "SVN"
-    ESP = "ESP"
-    USA = "USA"
-    EST = "EST"
-    ETH = "ETH"
-    PHL = "PHL"
-    FIN = "FIN"
-    FJI = "FJI"
-    FRA = "FRA"
-    GAB = "GAB"
-    GMB = "GMB"
-    GEO = "GEO"
-    GHA = "GHA"
-    GIB = "GIB"
-    GRD = "GRD"
-    GRC = "GRC"
-    GRL = "GRL"
-    GLP = "GLP"
-    GUM = "GUM"
-    GTM = "GTM"
-    GUF = "GUF"
-    GGY = "GGY"
-    GIN = "GIN"
-    GNB = "GNB"
-    GNQ = "GNQ"
-    GUY = "GUY"
-    HTI = "HTI"
-    HND = "HND"
-    HKG = "HKG"
-    HUN = "HUN"
-    IND = "IND"
-    IDN = "IDN"
-    IRQ = "IRQ"
-    IRN = "IRN"
-    IRL = "IRL"
-    BVT = "BVT"
-    IMN = "IMN"
-    CXR = "CXR"
-    NFK = "NFK"
-    ISL = "ISL"
-    CYM = "CYM"
-    CCK = "CCK"
-    COK = "COK"
-    FRO = "FRO"
-    SGS = "SGS"
-    HMD = "HMD"
-    FLK = "FLK"
-    MNP = "MNP"
-    MHL = "MHL"
-    PCN = "PCN"
-    SLB = "SLB"
-    TCA = "TCA"
-    UMI = "UMI"
-    VGB = "VGB"
-    VIR = "VIR"
-    ISR = "ISR"
-    ITA = "ITA"
-    JAM = "JAM"
-    JPN = "JPN"
-    JEY = "JEY"
-    JOR = "JOR"
-    KAZ = "KAZ"
-    KEN = "KEN"
-    KGZ = "KGZ"
-    KIR = "KIR"
-    KWT = "KWT"
-    LAO = "LAO"
-    LSO = "LSO"
-    LVA = "LVA"
-    LBN = "LBN"
-    LBR = "LBR"
-    LBY = "LBY"
-    LIE = "LIE"
-    LTU = "LTU"
-    LUX = "LUX"
-    MAC = "MAC"
-    MDG = "MDG"
-    MYS = "MYS"
-    MWI = "MWI"
-    MDV = "MDV"
-    MLI = "MLI"
-    MLT = "MLT"
-    MAR = "MAR"
-    MTQ = "MTQ"
-    MUS = "MUS"
-    MRT = "MRT"
-    MYT = "MYT"
-    MEX = "MEX"
-    FSM = "FSM"
-    MDA = "MDA"
-    MCO = "MCO"
-    MNG = "MNG"
-    MNE = "MNE"
-    MSR = "MSR"
-    MOZ = "MOZ"
-    NAM = "NAM"
-    NRU = "NRU"
-    NPL = "NPL"
-    NIC = "NIC"
-    NER = "NER"
-    NGA = "NGA"
-    NIU = "NIU"
-    NOR = "NOR"
-    NCL = "NCL"
-    NZL = "NZL"
-    OMN = "OMN"
-    NLD = "NLD"
-    PAK = "PAK"
-    PLW = "PLW"
-    PSE = "PSE"
-    PAN = "PAN"
-    PNG = "PNG"
-    PRY = "PRY"
-    PER = "PER"
-    PYF = "PYF"
-    POL = "POL"
-    PRT = "PRT"
-    PRI = "PRI"
-    GBR = "GBR"
-    CAF = "CAF"
-    CZE = "CZE"
-    MKD = "MKD"
-    COG = "COG"
-    COD = "COD"
-    DOM = "DOM"
-    REU = "REU"
-    RWA = "RWA"
-    ROU = "ROU"
-    RUS = "RUS"
-    ESH = "ESH"
-    WSM = "WSM"
-    ASM = "ASM"
-    BLM = "BLM"
-    KNA = "KNA"
-    SMR = "SMR"
-    MAF = "MAF"
-    SPM = "SPM"
-    VCT = "VCT"
-    SHN = "SHN"
-    LCA = "LCA"
-    STP = "STP"
-    SEN = "SEN"
-    SRB = "SRB"
-    SYC = "SYC"
-    SLE = "SLE"
-    SGP = "SGP"
-    SXM = "SXM"
-    SYR = "SYR"
-    SOM = "SOM"
-    LKA = "LKA"
-    SWZ = "SWZ"
-    ZAF = "ZAF"
-    SDN = "SDN"
-    SSD = "SSD"
-    SWE = "SWE"
-    CHE = "CHE"
-    SUR = "SUR"
-    SJM = "SJM"
-    THA = "THA"
-    TWN = "TWN"
-    TZA = "TZA"
-    TJK = "TJK"
-    IOT = "IOT"
-    ATF = "ATF"
-    TLS = "TLS"
-    TGO = "TGO"
-    TKL = "TKL"
-    TON = "TON"
-    TTO = "TTO"
-    TUN = "TUN"
-    TKM = "TKM"
-    TUR = "TUR"
-    TUV = "TUV"
-    UKR = "UKR"
-    UGA = "UGA"
-    URY = "URY"
-    UZB = "UZB"
-    VUT = "VUT"
-    VAT = "VAT"
-    VEN = "VEN"
-    VNM = "VNM"
-    WLF = "WLF"
-    YEM = "YEM"
-    DJI = "DJI"
-    ZMB = "ZMB"
-    ZWE = "ZWE"
-    ZZZ = "ZZZ"
+from cfdibills.cfdis.catalogs import *
+from cfdibills.cfdis.validators import (
+    dict2list,
+    is_positive,
+    parse_fecha,
+    reusable_validator,
+    validate_length,
+)
 
 
 class Emisor(BaseModel):
@@ -362,28 +44,7 @@ class Receptor(BaseModel):
     #: Atributo requerido para expresar la clave del uso que dará a esta factura el receptor del CFDI.
     uso_cfdi: UsoCFDI
 
-    @validator("num_reg_id_trib")
-    def condiciones_de_pago_must_be_valid(cls, condiciones_de_pago: str):
-        validate_length(condiciones_de_pago, 1, 40)
-        return condiciones_de_pago
-
-
-class Impuesto(str, Enum):
-    #: Impuesto Sobre la Renta (ISR)
-    isr = "001"
-    #: Impuesto al Valor Agregado (IVA)
-    iva = "002"
-    #: Impuesto Especial Sobre Producción y Servicios (IEPS)
-    ieps = "003"
-
-
-class TipoFactor(str, Enum):
-    #: Tasa
-    tasa = "Tasa"
-    #: Cuota
-    cuota = "Cuota"
-    #: Exento
-    exento = "Exento"
+    _num_reg_length = reusable_validator("num_reg_id_trib")(validate_length(min_length=1, max_length=40))
 
 
 class Traslado(BaseModel):
@@ -424,13 +85,7 @@ class ImpuestosConcepto(BaseModel):
     #: Nodo opcional para asentar los impuestos retenidos aplicables al presente concepto.
     retenciones: List[Retencion] = []
 
-    @validator("traslados", pre=True)
-    def traslados_is_array(cls, traslados):
-        return dict2list(traslados)
-
-    @validator("retenciones", pre=True)
-    def retenciones_is_array(cls, retenciones):
-        return dict2list(retenciones)
+    _to_array = reusable_validator("traslados", "retenciones", pre=True)(dict2list)
 
 
 class InformacionAduanera(BaseModel):
@@ -525,9 +180,7 @@ class Concepto(BaseModel):
     #: negativos.
     descuento: Optional[float]
 
-    @validator("complemento_concepto", pre=True)
-    def complemento_concepto_is_array(cls, complemento_concepto):
-        return dict2list(complemento_concepto)
+    _complemento_to_array = reusable_validator("complemento_concepto", pre=True)(dict2list)
 
 
 class RetencionCFDI(BaseModel):
@@ -566,13 +219,7 @@ class ImpuestosCFDI(BaseModel):
     #: en los conceptos se registren impuestos trasladados.
     total_impuestos_trasladados: float = 0.0
 
-    @validator("traslados", pre=True)
-    def traslados_is_array(cls, traslados):
-        return dict2list(traslados)
-
-    @validator("retenciones", pre=True)
-    def retenciones_is_array(cls, retenciones):
-        return dict2list(retenciones)
+    _to_array = reusable_validator("traslados", "retenciones", pre=True)(dict2list)
 
 
 class TimbreFiscalDigital(BaseModel):
@@ -588,9 +235,7 @@ class TimbreFiscalDigital(BaseModel):
     no_certificado_sat: str
     sello_sat: str
 
-    @validator("fecha_timbrado", pre=True)
-    def parse_fecha(cls, fecha_timbrado: str):
-        return datetime.strptime(fecha_timbrado, "%Y-%m-%dT%H:%M:%S")
+    _parse_fecha = reusable_validator("fecha_timbrado", pre=True)(parse_fecha)
 
 
 class Complemento(BaseModel):
@@ -607,270 +252,6 @@ class CfdiRelacionado(BaseModel):
     #: Atributo requerido para indicar la clave de la relación que existe entre éste que se esta generando y el o
     #: los CFDI previos.
     tipo_relacion: TipoRelacion
-
-
-class TipoDeComprobante(str, Enum):
-    ingreso = "I"
-    egreso = "E"
-    traslado = "T"
-    nomina = "N"
-    pago = "P"
-
-
-class MetodoDePago(str, Enum):
-    #: Pago en una sola exhibición
-    pue = "PUE"
-    #: Pago en parcialidades o diferido
-    ppd = "PPD"
-
-
-class FormaPago(str, Enum):
-    #: Efectivo
-    efectivo = "01"
-    #: Cheque nominativo
-    cheque_nominativo = "02"
-    #: Transferencia electrónica de fondos
-    transferencia = "03"
-    #: Tarjeta de crédito
-    tarjeta_de_credito = "04"
-    #: Monedero electrónico
-    monedero_electronico = "05"
-    #: Dinero electrónico
-    dinero_electronico = "06"
-    #: Vales de despensa
-    vales_de_despensa = "08"
-    #: Dación en pago
-    dacion_en_pago = "12"
-    #: Pago por subrogación
-    pago_subrogacion = "13"
-    #: Pago por consignación
-    pago_consignacion = "14"
-    #: Condonación
-    condonacion = "15"
-    #: Compensación
-    compensacion = "17"
-    #: Novación
-    novacion = "23"
-    #: Confusión
-    confusion = "24"
-    #: Remisión de deuda
-    remision = "25"
-    #: Prescripción o caducidad
-    prescripcion = "26"
-    #: A satisfacción del acreedor
-    a_satisfaccion = "27"
-    #: Tarjeta de débito
-    tarjeta_de_debito = "28"
-    #: Tarjeta de servicios
-    tarjeta_de_servicios = "29"
-    #: Aplicación de anticipos
-    aplicacion_de_anticipos = "30"
-    #: Intermediario pagos
-    intermediario_pagos = "31"
-    #: Por definir
-    por_definir = "99"
-
-
-class Moneda(str, Enum):
-    AED = "AED"
-    AFN = "AFN"
-    ALL = "ALL"
-    AMD = "AMD"
-    ANG = "ANG"
-    AOA = "AOA"
-    ARS = "ARS"
-    AUD = "AUD"
-    AWG = "AWG"
-    AZN = "AZN"
-    BAM = "BAM"
-    BBD = "BBD"
-    BDT = "BDT"
-    BGN = "BGN"
-    BHD = "BHD"
-    BIF = "BIF"
-    BMD = "BMD"
-    BND = "BND"
-    BOB = "BOB"
-    BOV = "BOV"
-    BRL = "BRL"
-    BSD = "BSD"
-    BTN = "BTN"
-    BWP = "BWP"
-    BYR = "BYR"
-    BZD = "BZD"
-    CAD = "CAD"
-    CDF = "CDF"
-    CHE = "CHE"
-    CHF = "CHF"
-    CHW = "CHW"
-    CLF = "CLF"
-    CLP = "CLP"
-    CNY = "CNY"
-    COP = "COP"
-    COU = "COU"
-    CRC = "CRC"
-    CUC = "CUC"
-    CUP = "CUP"
-    CVE = "CVE"
-    CZK = "CZK"
-    DJF = "DJF"
-    DKK = "DKK"
-    DOP = "DOP"
-    DZD = "DZD"
-    EGP = "EGP"
-    ERN = "ERN"
-    ETB = "ETB"
-    EUR = "EUR"
-    FJD = "FJD"
-    FKP = "FKP"
-    GBP = "GBP"
-    GEL = "GEL"
-    GHS = "GHS"
-    GIP = "GIP"
-    GMD = "GMD"
-    GNF = "GNF"
-    GTQ = "GTQ"
-    GYD = "GYD"
-    HKD = "HKD"
-    HNL = "HNL"
-    HRK = "HRK"
-    HTG = "HTG"
-    HUF = "HUF"
-    IDR = "IDR"
-    ILS = "ILS"
-    INR = "INR"
-    IQD = "IQD"
-    IRR = "IRR"
-    ISK = "ISK"
-    JMD = "JMD"
-    JOD = "JOD"
-    JPY = "JPY"
-    KES = "KES"
-    KGS = "KGS"
-    KHR = "KHR"
-    KMF = "KMF"
-    KPW = "KPW"
-    KRW = "KRW"
-    KWD = "KWD"
-    KYD = "KYD"
-    KZT = "KZT"
-    LAK = "LAK"
-    LBP = "LBP"
-    LKR = "LKR"
-    LRD = "LRD"
-    LSL = "LSL"
-    LYD = "LYD"
-    MAD = "MAD"
-    MDL = "MDL"
-    MGA = "MGA"
-    MKD = "MKD"
-    MMK = "MMK"
-    MNT = "MNT"
-    MOP = "MOP"
-    MRO = "MRO"
-    MUR = "MUR"
-    MVR = "MVR"
-    MWK = "MWK"
-    MXN = "MXN"
-    MXV = "MXV"
-    MYR = "MYR"
-    MZN = "MZN"
-    NAD = "NAD"
-    NGN = "NGN"
-    NIO = "NIO"
-    NOK = "NOK"
-    NPR = "NPR"
-    NZD = "NZD"
-    OMR = "OMR"
-    PAB = "PAB"
-    PEN = "PEN"
-    PGK = "PGK"
-    PHP = "PHP"
-    PKR = "PKR"
-    PLN = "PLN"
-    PYG = "PYG"
-    QAR = "QAR"
-    RON = "RON"
-    RSD = "RSD"
-    RUB = "RUB"
-    RWF = "RWF"
-    SAR = "SAR"
-    SBD = "SBD"
-    SCR = "SCR"
-    SDG = "SDG"
-    SEK = "SEK"
-    SGD = "SGD"
-    SHP = "SHP"
-    SLL = "SLL"
-    SOS = "SOS"
-    SRD = "SRD"
-    SSP = "SSP"
-    STD = "STD"
-    SVC = "SVC"
-    SYP = "SYP"
-    SZL = "SZL"
-    THB = "THB"
-    TJS = "TJS"
-    TMT = "TMT"
-    TND = "TND"
-    TOP = "TOP"
-    TRY = "TRY"
-    TTD = "TTD"
-    TWD = "TWD"
-    TZS = "TZS"
-    UAH = "UAH"
-    UGX = "UGX"
-    USD = "USD"
-    USN = "USN"
-    UYI = "UYI"
-    UYU = "UYU"
-    UZS = "UZS"
-    VEF = "VEF"
-    VND = "VND"
-    VUV = "VUV"
-    WST = "WST"
-    XAF = "XAF"
-    XAG = "XAG"
-    XAU = "XAU"
-    XBA = "XBA"
-    XBB = "XBB"
-    XBC = "XBC"
-    XBD = "XBD"
-    XCD = "XCD"
-    XDR = "XDR"
-    XOF = "XOF"
-    XPD = "XPD"
-    XPF = "XPF"
-    XPT = "XPT"
-    XSU = "XSU"
-    XTS = "XTS"
-    XUA = "XUA"
-    XXX = "XXX"
-    YER = "YER"
-    ZAR = "ZAR"
-    ZMW = "ZMW"
-    ZWL = "ZWL"
-
-
-class TipoRelacion(str, Enum):
-    #: Nota de crédito de los documentos relacionados
-    nota_credito = "01"
-    #: Nota de débito de los documentos relacionados
-    nota_debito = "02"
-    #: Devolución de mercancía sobre facturas o traslados previos
-    devolucion = "03"
-    #: Sustitución de los CFDI previos
-    sustitucion = "04"
-    #: Traslados de mercancias facturados previamente
-    traslados = "05"
-    #: Factura generada por los traslados previos
-    factura_traslados = "06"
-    #: CFDI por aplicación de anticipo
-    aplicacion_de_anticipo = "07"
-    #: Facturas Generadas por Pagos en Parcialidades
-    pagos_en_parcialidades = "08"
-    #: Factura Generada por Pagos Diferidos
-    pagos_diferidos = "09"
 
 
 class CFDI33(BaseModel):
@@ -955,13 +336,13 @@ class CFDI33(BaseModel):
     #: Para las reglas de uso del mismo, referirse al formato origen.
     addenda: Optional[Dict]
 
-    @validator("complemento", pre=True)
-    def complemento_is_array(cls, complemento):
-        return dict2list(complemento)
-
-    @validator("conceptos", pre=True)
-    def conceptos_is_array(cls, conceptos):
-        return dict2list(conceptos)
+    _to_array = reusable_validator("complemento", "conceptos", pre=True)(dict2list)
+    _parse_fecha = reusable_validator("fecha", pre=True)(parse_fecha)
+    _validate_serie = reusable_validator("serie")(validate_length(min_length=1, max_length=25))
+    _validate_folio = reusable_validator("folio")(validate_length(min_length=1, max_length=40))
+    _validate_pago = reusable_validator("condiciones_de_pago")(validate_length(min_length=1, max_length=1000))
+    _validate_confirmacion = reusable_validator("confirmacion")(validate_length(min_length=5, max_length=5))
+    _validate_sub_total = validator("sub_total", "descuento")(is_positive)
 
     @validator("version")
     def version_must_be_33(cls, v: str):
@@ -969,65 +350,19 @@ class CFDI33(BaseModel):
             raise ValueError(f"Version must be fixed to '3.3'")
         return v
 
-    @validator("serie")
-    def serie_must_be_valid(cls, serie: str):
-        validate_length(serie, 1, 25)
-        return serie
-
-    @validator("folio")
-    def folio_must_be_valid(cls, folio: str):
-        validate_length(folio, 1, 40)
-        return folio
-
-    @validator("fecha", pre=True)
-    def parse_fecha(cls, fecha: str):
-        return datetime.strptime(fecha, "%Y-%m-%dT%H:%M:%S")
-
     @validator("no_certificado")
     def no_certificado_must_be_valid(cls, no_certificado: str):
         if not no_certificado.isnumeric() or len(no_certificado) != 20:
             raise ValueError(f"{no_certificado=} must be numeric of length 20")
         return no_certificado
 
-    @validator("condiciones_de_pago")
-    def condiciones_de_pago_must_be_valid(cls, condiciones_de_pago: str):
-        validate_length(condiciones_de_pago, 1, 1000)
-        return condiciones_de_pago
-
-    @validator("sub_total")
-    def sub_total_must_be_positive(cls, sub_total: float):
-        if sub_total < 0:
-            raise ValueError(f"{sub_total=} must be a positive number")
-        return sub_total
-
-    @validator("descuento")
-    def descuento_must_be_positive(cls, descuento: float):
-        if descuento < 0:
-            raise ValueError(f"{descuento=} must be a positive number")
-        return descuento
-
-    @validator("confirmacion")
-    def confirmacion_must_be_valid(cls, confirmacion: str):
-        length = len(confirmacion)
-        if length != 5:
-            raise ValueError(f"{confirmacion=} must be of length=5")
-        return confirmacion
-
     def get_total_iva(self) -> float:
-        total = 0
         traslados = self.impuestos.traslados
-        for traslado in traslados:
-            if traslado.impuesto == Impuesto.iva:
-                total += traslado.importe
-        return total
+        return sum([traslado.importe for traslado in traslados if traslado.impuesto == Impuesto.iva])
 
     def get_total_ieps(self) -> float:
-        total = 0
         traslados = self.impuestos.traslados
-        for traslado in traslados:
-            if traslado.impuesto == Impuesto.ieps:
-                total += traslado.importe
-        return total
+        return sum([traslado.importe for traslado in traslados if traslado.impuesto == Impuesto.ieps])
 
     def get_timbre_fiscal_digital(self) -> TimbreFiscalDigital:
         for complemento in self.complemento:

@@ -1,5 +1,5 @@
-from cfdibills.api import consulta_cfdi_service, SATConsultaResponse
-from cfdis.cfdi33 import CFDI33
+from cfdibills.api import SATConsultaResponse, consulta_cfdi_service
+from cfdibills.cfdis.cfdi33 import CFDI33
 
 
 def verify(
@@ -25,11 +25,7 @@ def verify(
     -------
     SATConsultaResponse
     """
-    return (
-        _verify_cfdi(cfdi)
-        if cfdi
-        else _verify_cfdi_by_values(uuid, rfc_emisor, rfc_receptor, total_facturado)
-    )
+    return _verify_cfdi(cfdi) if cfdi else _verify_cfdi_by_values(uuid, rfc_emisor, rfc_receptor, total_facturado)
 
 
 def _verify_cfdi(cfdi: CFDI33) -> SATConsultaResponse:
@@ -44,13 +40,6 @@ def _verify_cfdi(cfdi: CFDI33) -> SATConsultaResponse:
 def _verify_cfdi_by_values(
     uuid: str, rfc_emisor: str, rfc_receptor: str, total_facturado: float
 ) -> SATConsultaResponse:
-    if (
-        uuid is None
-        or rfc_emisor is None
-        or rfc_receptor is None
-        or total_facturado is None
-    ):
-        raise ValueError(
-            "All args [uuid, rfc_emisor, rfc_receptor, total_facturado] must be not None"
-        )
+    if uuid is None or rfc_emisor is None or rfc_receptor is None or total_facturado is None:
+        raise ValueError("All args [uuid, rfc_emisor, rfc_receptor, total_facturado] must be not None")
     return consulta_cfdi_service(uuid, rfc_emisor, rfc_receptor, total_facturado)
