@@ -11,7 +11,7 @@ jobs:
       - uses: actions/setup-python@v3
         with:
           python-version: '3.8'
-        name: Check setup.py is valid
+      - name: Check setup.py is valid
         run: |
           python setup_check.py
   check-package:
@@ -25,6 +25,7 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Try to build package
         run: |
           python setup.py sdist bdist_wheel --formats=gztar || {
             echoerr "It was not possible to create a source distribution."
