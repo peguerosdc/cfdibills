@@ -1,5 +1,6 @@
 # cfdibills
 [![PyPI Latest Release](https://img.shields.io/pypi/v/cfdibills.svg)](https://pypi.org/project/cfdibills/)
+[![codecov](https://codecov.io/gh/peguerosdc/cfdibills/branch/main/graph/badge.svg?token=IE6CNFJJMQ)](https://codecov.io/gh/peguerosdc/cfdibills)
 
 Utility to inspect and verify CFDI (Mexican invoice) versions 3.3 and 4.0
 
@@ -45,7 +46,7 @@ This repository uses [pre-commit](https://pre-commit.com/) to help developers pe
 the CI pipeline but before having to wait for a Pull-Request. You can set it up using:
 
 ```sh
-pip install pre-commit
+pip install -r requirements_dev.txt
 pre-commit install
 ```
 
