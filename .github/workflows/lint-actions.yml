@@ -37,11 +37,13 @@ jobs:
           ignore: "E731,W503,W504"
           exclude: "__init__.py"
           max-line-length: "120"
-          args: "--show-source --statistics --filename=*.py cfdibills/ tests/"
+          args: "--show-source --statistics --filename=*.py"
+          path: "cfdibills/ tests/"
       - name: flake8 (__init__.py)
         uses: py-actions/flake8@v2
         with:
           ignore: "E731,F401,F403,W503"
           max-line-length: "120"
-          args: "--show-source --statistics --filename=*__init__.py cfdibills/ tests/"
+          args: "--show-source --statistics --filename=*__init__.py"
+          path: "cfdibills/ tests/"
 
