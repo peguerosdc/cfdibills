@@ -11,20 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{REPOSITORY_NAME}}
+        working-directory: ${{env.REPOSITORY_NAME}}
     steps:
       - uses: actions/checkout@v3
       - uses: psf/black@22.6.0
         with:
-          options: "--line-length 120 --check --diff"
+          options: "--line-length 120 --check --diff ${{env.REPOSITORY_NAME}} tests"
   isort:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{REPOSITORY_NAME}}
     steps:
       - uses: actions/checkout@v3
       - uses: jamescurtin/isort-action@master
         with:
-          configuration: "--profile black --filter-files --check-only --diff"
+          configuration: "--profile black --filter-files --check-only --diff ${{env.REPOSITORY_NAME}} tests"
           requirementsFiles: "requirements.txt requirements_test.txt"
