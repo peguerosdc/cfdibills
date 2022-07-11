@@ -35,32 +35,11 @@ repos:
       name: did pip-compile?
       args:
         - requirements.in
-  - repo: https://github.com/pycqa/flake8
-    rev: '4.0.1'
+  - repo: local
     hooks:
-    - id: flake8
-      name: flake8 (*.py)
-      files: "(cfdibills/.*)|(tests/.*)"
-      exclude: __init__.py
-      args:
-        - --ignore
-        - "E731,W503,W504"
-        - --filename
-        - "*.py"
-        - --show-source
-        - --statistics
-        - --max-line-length
-        - "120"
-    - id: flake8
-      name: flake8 (__init__.py)
-      files: "(cfdibills/.*)|(tests/.*)"
-      exclude: "tests/samples"
-      args:
-        - --ignore
-        - "E731,F401,F403,W503"
-        - --filename
-        - "*__init__.py"
-        - --show-source
-        - --statistics
-        - --max-line-length
-        - "120"
+      - id: check-setup
+        name: setup_check.py
+        entry: python setup_check.py
+        language: system
+        types: [python]
+        always_run: true

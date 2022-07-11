@@ -25,26 +25,29 @@ def requirements_from_pip(filename: str) -> List[str]:
         return [l.strip() for l in pip if not l.startswith("#") and l.strip()]
 
 
-setup(
-    name=MODULE_NAME,
-    version=get_version(),
-    description="Read and verify CFDI invoices via SAT's web service",
-    long_description=README,
-    long_description_content_type="text/markdown",
-    license="LGPGLv3",
-    license_file="LICENSE",
-    author="Carlos Pegueros",
-    author_email="peguerosdc@gmail.com",
-    packages=find_packages(),
-    url=f"https://github.com/peguerosdc/{MODULE_NAME}",
-    keywords=["cfdi", "sat", "client", "mexico"],
-    install_requires=requirements_from_pip(REQUIREMENTS_FILE),
-    extras_require={
+SETUP_ARGS = {
+    "name": MODULE_NAME,
+    "version": get_version(),
+    "description": "Read and verify CFDI bills via SAT's web service",
+    "long_description": README,
+    "long_description_content_type": "text/markdown",
+    "license": "LGPGLv3",
+    "license_file": "LICENSE",
+    "author": "Carlos Pegueros",
+    "author_email": "peguerosdc@gmail.com",
+    "packages": find_packages(),
+    "url": f"https://github.com/peguerosdc/{MODULE_NAME}",
+    "keywords": ["cfdi", "sat", "client", "mexico"],
+    "install_requires": requirements_from_pip(REQUIREMENTS_FILE),
+    "extras_require": {
         "dev": requirements_from_pip("requirements_dev.txt"),
         "test": requirements_from_pip("requirements_test.txt"),
     },
-    classifiers=[
+    "classifiers": [
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-)
+}
+
+if __name__ == "__main__":
+    setup(**SETUP_ARGS)
