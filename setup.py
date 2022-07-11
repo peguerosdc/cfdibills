@@ -36,6 +36,7 @@ SETUP_ARGS = {
     "author": "Carlos Pegueros",
     "author_email": "peguerosdc@gmail.com",
     "packages": find_packages(),
+    "include_package_data": True,
     "url": f"https://github.com/peguerosdc/{MODULE_NAME}",
     "keywords": ["cfdi", "sat", "client", "mexico"],
     "install_requires": requirements_from_pip(REQUIREMENTS_FILE),
