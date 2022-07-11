@@ -2,7 +2,11 @@ from devtools import debug
 from pytest import mark
 
 from cfdibills import read_xml
-from cfdibills.cfdis.complementos import *
+from cfdibills.cfdis.complementos import (
+    Aerolineas,
+    CertificadoDeDestruccion,
+    ComercioExterior,
+)
 from tests.utils import does_not_raise
 
 

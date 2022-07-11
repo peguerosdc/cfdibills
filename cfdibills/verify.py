@@ -26,7 +26,12 @@ def verify(
     -------
     SATConsultaResponse
     """
-    return _verify_cfdi(cfdi) if cfdi else _verify_cfdi_by_values(uuid, rfc_emisor, rfc_receptor, total_facturado)  # type: ignore # this is validated in _verify_cfdi_by_values
+    # this is validated in _verify_cfdi_by_values
+    return (
+        _verify_cfdi(cfdi)
+        if cfdi
+        else _verify_cfdi_by_values(uuid, rfc_emisor, rfc_receptor, total_facturado)  # type: ignore
+    )
 
 
 def _verify_cfdi(cfdi: CFDI33) -> SATConsultaResponse:

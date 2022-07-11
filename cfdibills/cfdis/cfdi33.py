@@ -6,7 +6,17 @@ from uuid import UUID
 
 from pydantic import BaseModel, validator
 
-from cfdibills.cfdis.catalogs import *
+from cfdibills.cfdis.catalogs import (
+    FormaPago,
+    Impuesto,
+    MetodoDePago,
+    Moneda,
+    Pais,
+    TipoDeComprobante,
+    TipoFactor,
+    TipoRelacion,
+    UsoCFDI,
+)
 from cfdibills.cfdis.complementos import AnyComplementoType, ComplementoType
 from cfdibills.cfdis.validators import (
     dict2list,
@@ -337,7 +347,7 @@ class CFDI33(BaseModel):
     @validator("version")
     def version_must_be_33(cls, v: str):
         if v != "3.3":
-            raise ValueError(f"Version must be fixed to '3.3'")
+            raise ValueError("Version must be fixed to '3.3'")
         return v
 
     @validator("no_certificado")

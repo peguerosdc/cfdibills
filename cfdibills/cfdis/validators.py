@@ -45,7 +45,7 @@ def parse_fecha(fecha: str) -> datetime:
 
 def is_positive(value):
     if value < 0:
-        raise ValueError(f"Must be a positive number")
+        raise ValueError("Must be a positive number")
     return value
 
 
