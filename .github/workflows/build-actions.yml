@@ -1,0 +1,49 @@
+name: Build
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+      - name: Check setup.py is valid
+        run: |
+          python setup_check.py
+  check-package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools
+      - name: test-packaging
+        run: |
+          python setup.py sdist --formats=gztar || {
+            echoerr "It was not possible to create a source distribution."
+            echo "For more information, consult:"
+            echo "  - https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives"
+            echo "  - https://setuptools.pypa.io/en/latest/index.html"
+            exit 1
+          }
+          
+          cd dist/
+          tar -xf *.tar.gz          # project-name-X.Y.Z.tar.gz, where X.Y.Z is the version
+          folder_name="$(ls -d */)" # project-name-X.Y.Z/
+      
+          python -m pip install "${folder_name}" --no-deps || {
+            echoerr "It was not possible to install the package."
+            exit 1
+          }

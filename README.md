@@ -1,41 +1,54 @@
-# cfdibilly
-[![PyPI Latest Release](https://img.shields.io/pypi/v/cfdibilly.svg)](https://pypi.org/project/cfdibilly/)
+# cfdibills
+[![PyPI Latest Release](https://img.shields.io/pypi/v/cfdibills.svg)](https://pypi.org/project/cfdibills/)
+[![codecov](https://codecov.io/gh/peguerosdc/cfdibills/branch/main/graph/badge.svg?token=IE6CNFJJMQ)](https://codecov.io/gh/peguerosdc/cfdibills)
 
-Utility to inspect and validate CFDI (Mexican invoice) versions 3.3 and 4.0
+Utility to inspect and verify CFDI (Mexican invoice) versions 3.3 and 4.0
 
 ## Features
 
-* Load a CFDI (any XML) into a python dictionary
-* Gather the status of a CFDI from SAT
-* **Doesn't require** additional dependencies to read XML like libxml2-dev, libxslt-dev
+* Load a CFDI in XML format into a [pydantic](https://github.com/samuelcolvin/pydantic) object
+* Query the status of a CFDI via SAT's web service
+* Only presence of required fields is validated, but this package doesn't perform a thorough validation of the CFDI
+standard.
+* **DOESN'T REQUIRE** additional dependencies to read the XML like libxml2-dev, libxslt-dev
+
 
 ## Installation
 
 Run:
 
 ```sh
-pip install cfdibilly
+pip install cfdibills
 ```
 
 ## Examples
 
-You can load a verify an invoice directly from its XML:
+You can load a verify a bill directly from its XML:
 
 ````python
-import cfdibilly
+import cfdibills
 
-file = "invoice.xml"
-cfdi = cfdibilly.read_xml(file)
-status = cfdibilly.verify(cfdi)
+cfdi = cfdibills.read_xml("path/to/invoice.xml")
+status = cfdibills.verify(cfdi)
 ````
 
-Or you can verify an invoice manually:
+Or you can verify it manually:
 
 ````python
-import cfdibilly
+import cfdibills
 
-cfdibilly.verify(uuid="folio fiscal", rfc_emisor="re", rfc_receptor="rr", total_facturado=150.00)
+cfdibills.verify(uuid="folio fiscal", rfc_emisor="re", rfc_receptor="rr", total_facturado=150.00)
 ````
+
+## Contributing
+
+This repository uses [pre-commit](https://pre-commit.com/) to help developers perform almost the same validations as in
+the CI pipeline but before having to wait for a Pull-Request. You can set it up using:
+
+```sh
+pip install -r requirements_dev.txt
+pre-commit install
+```
 
 ## License
 
