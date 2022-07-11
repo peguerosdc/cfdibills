@@ -8,7 +8,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - name: Check setup.py is valid
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+        name: Check setup.py is valid
         run: |
           python setup_check.py
+  check-package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+        run: |
+          python setup.py sdist bdist_wheel --formats=gztar || {
+            echoerr "It was not possible to create a source distribution."
+            echo "For more information, consult:"
+            echo "  - https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives"
+            echo "  - https://docs.python.org/3.6/distutils/sourcedist.html"
+            exit 1
+          }
+          
+          cd dist/
+          tar -xf *.tar.gz          # project-name-X.Y.Z.tar.gz, where X.Y.Z is the version
+          folder_name="$(ls -d */)" # project-name-X.Y.Z/
+      
+          python -m pip install "${folder_name}" --no-deps || {
+            echoerr "It was not possible to install the package."
+            exit 1
+          }
