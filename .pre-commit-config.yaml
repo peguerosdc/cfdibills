@@ -15,6 +15,7 @@ repos:
     hooks:
       - id: mypy
         args: [--ignore-missing-imports, --pretty]
+        files: cfdibills/
         additional_dependencies: [types-requests==2.28.0]
         verbose: true
   - repo: https://github.com/MartinThoma/check-pip-compile
