@@ -1,0 +1,14 @@
+name: Requirements
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  are-requirements-compiled:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: jpetrucciani/mypy-check@0.930
+        with:
+          mypy_flags: "--ignore-missing-imports --pretty --non-interactive --install-types"
+          path: "cfdibills tests"

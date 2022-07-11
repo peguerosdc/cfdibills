@@ -49,7 +49,7 @@ def test_parse_fecha():
         (-1, pytest.raises(ValueError)),
     ],
 )
-def test_validate_length(value, raises):
+def test_validate_is_positive(value, raises):
     with raises:
         assert value == is_positive(value)
 

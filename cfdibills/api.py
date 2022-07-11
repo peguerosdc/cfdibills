@@ -51,10 +51,9 @@ def _call_sat(uuid: str, rfc_emisor: str, rfc_receptor: str, total_facturado: fl
         "SOAPAction": "http://tempuri.org/IConsultaCFDIService/Consulta",
     }
     response = requests.post(url, data=body, headers=headers)
-    data = response.content
     if response.status_code != 200:
-        raise ValueError(f"An error occurred when verifying with SAT. Response: {data}")
-    return xmltodict.parse(data)
+        raise ValueError(f"An error occurred when verifying with SAT. Response: {response.text}")
+    return xmltodict.parse(response.content)
 
 
 def consulta_cfdi_service(uuid: str, rfc_emisor: str, rfc_receptor: str, total_facturado: float) -> SATConsultaResponse:

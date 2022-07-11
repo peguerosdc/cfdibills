@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from decimal import Decimal
+from typing import Callable, Type, Union
 
 import xmltodict
 
@@ -61,10 +62,11 @@ def normalize_dict_keys(ugly_dict: dict) -> dict:
     * if it is an array, normalize every item in it
     """
     result = dict()
-    normalization = dict()
-    normalization[list] = lambda x: [normalize_dict_keys(y) for y in x]
-    normalization[dict] = lambda x: normalize_dict_keys(x)
-    normalization[Decimal] = lambda x: float(x)
+    normalization: dict[Type[Union[list, dict, Decimal]], Callable] = {
+        list: lambda x: [normalize_dict_keys(y) for y in x],
+        dict: lambda x: normalize_dict_keys(x),
+        Decimal: lambda x: float(x),
+    }
     # normalize key by key in a DFS way
     for key, value in ugly_dict.items():
         # namespaces are not part of cfdi's, so they are omitted

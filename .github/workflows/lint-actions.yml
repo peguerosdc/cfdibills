@@ -3,15 +3,9 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  REPOSITORY_NAME: $(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
-
 jobs:
   black:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{env.REPOSITORY_NAME}}
     steps:
       - uses: actions/checkout@v3
       - uses: psf/black@22.6.0
@@ -25,3 +19,11 @@ jobs:
         with:
           configuration: "--profile black --filter-files --check-only --diff cfdibills tests"
           requirementsFiles: "requirements.txt requirements_test.txt"
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: jpetrucciani/mypy-check@0.930
+        with:
+          mypy_flags: "--ignore-missing-imports --pretty --non-interactive --install-types"
+          path: "cfdibills tests"
