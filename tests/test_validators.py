@@ -4,7 +4,7 @@ import pytest
 from pytest import mark
 
 from cfdibills.cfdis.validators import (
-    dict2list,
+    dict2list_flatten,
     is_positive,
     parse_fecha,
     validate_length,
@@ -57,23 +57,18 @@ def test_validate_length(value, raises):
 @mark.parametrize(
     "original, expected",
     [
-        ([1, 2, 3], [1, 2, 3]),
+        ([{"impuesto": "traslado1"}], [{"impuesto": "traslado1"}]),
         (
-            {"isdict": {"a": 1, "b": 2}, "islist": [{"a": 3, "b": 4}]},
+            {"traslado": {"a": {"aa": 1}, "b": {"bb": 1}}},
             [
                 {
-                    "tipo": "isdict",
-                    "a": 1,
-                    "b": 2,
-                },
-                {
-                    "tipo": "islist",
-                    "a": 3,
-                    "b": 4,
+                    "a": {"aa": 1},
+                    "b": {"bb": 1},
                 },
             ],
         ),
+        ({"traslado": [{"a": 3, "b": 4}]}, [{"a": 3, "b": 4}]),
     ],
 )
 def test_dict2list(original, expected):
-    assert dict2list(original) == expected
+    assert dict2list_flatten(original) == expected

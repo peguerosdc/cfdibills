@@ -3,6 +3,9 @@ from typing import List
 
 from setuptools import find_packages, setup
 
+# Package name used to install via pip (shown in `pip freeze` or `conda list`)
+MODULE_NAME = "cfdibills"
+
 # The directory containing this file
 HERE = Path(__file__).parent
 
@@ -13,15 +16,18 @@ README = (HERE / "README.md").read_text()
 REQUIREMENTS_FILE = "requirements.in"
 
 
+def get_version() -> str:
+    return (HERE / MODULE_NAME / "VERSION").read_text().strip()
+
+
 def requirements_from_pip(filename: str) -> List[str]:
     with open(filename, "r") as pip:
         return [l.strip() for l in pip if not l.startswith("#") and l.strip()]
 
 
-# How to manage version bumping: https://realpython.com/pypi-publish-python-package/#versioning-your-package
 setup(
-    name="cfdibills",
-    version="0.2.0.a01",
+    name=MODULE_NAME,
+    version=get_version(),
     description="Read and verify CFDI invoices via SAT's web service",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -30,13 +36,15 @@ setup(
     author="Carlos Pegueros",
     author_email="peguerosdc@gmail.com",
     packages=find_packages(),
-    package_data={
-        "cfdibills": ["api/cache/*", "cfdis/*/schema/*"],
-    },
-    url="https://github.com/peguerosdc/cfdibills",
+    url=f"https://github.com/peguerosdc/{MODULE_NAME}",
     keywords=["cfdi", "sat", "client", "mexico"],
     install_requires=requirements_from_pip(REQUIREMENTS_FILE),
     extras_require={
         "dev": requirements_from_pip("requirements_dev.txt"),
+        "test": requirements_from_pip("requirements_test.txt"),
     },
+    classifiers=[
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
 )

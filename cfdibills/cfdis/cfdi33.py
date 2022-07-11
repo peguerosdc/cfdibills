@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Type
 from uuid import UUID
 
 from pydantic import BaseModel, validator
 
 from cfdibills.cfdis.catalogs import *
+from cfdibills.cfdis.complementos import AnyComplementoType, ComplementoType
 from cfdibills.cfdis.validators import (
     dict2list,
+    dict2list_flatten,
     is_positive,
     parse_fecha,
     reusable_validator,
@@ -85,7 +87,7 @@ class ImpuestosConcepto(BaseModel):
     #: Nodo opcional para asentar los impuestos retenidos aplicables al presente concepto.
     retenciones: List[Retencion] = []
 
-    _to_array = reusable_validator("traslados", "retenciones", pre=True)(dict2list)
+    _to_array = reusable_validator("traslados", "retenciones", pre=True)(dict2list_flatten)
 
 
 class InformacionAduanera(BaseModel):
@@ -219,27 +221,7 @@ class ImpuestosCFDI(BaseModel):
     #: en los conceptos se registren impuestos trasladados.
     total_impuestos_trasladados: float = 0.0
 
-    _to_array = reusable_validator("traslados", "retenciones", pre=True)(dict2list)
-
-
-class TimbreFiscalDigital(BaseModel):
-    """
-    http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/timbrefiscaldigital/TimbreFiscalDigitalv11.xsd
-    """
-
-    version: str
-    uuid: UUID
-    fecha_timbrado: datetime
-    rfc_prov_certif: str
-    sello_cfd: str
-    no_certificado_sat: str
-    sello_sat: str
-
-    _parse_fecha = reusable_validator("fecha_timbrado", pre=True)(parse_fecha)
-
-
-class Complemento(BaseModel):
-    timbre_fiscal_digital: TimbreFiscalDigital
+    _to_array = reusable_validator("traslados", "retenciones", pre=True)(dict2list_flatten)
 
 
 class CfdiRelacionado(BaseModel):
@@ -255,6 +237,14 @@ class CfdiRelacionado(BaseModel):
 
 
 class CFDI33(BaseModel):
+    """
+    Schema of a CFDI version 3.3 based on:
+
+    http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI/tdCFDI.xsd
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     #: Atributo requerido con valor prefijado a 3.3 que indica la versión del estándar bajo el que se encuentra
     #: expresado el comprobante.
     version: str
@@ -331,12 +321,12 @@ class CFDI33(BaseModel):
     #: Nodo opcional donde se incluye el complemento Timbre Fiscal Digital de manera obligatoria y los nodos
     #: complementarios determinados por el SAT, de acuerdo con las disposiciones particulares para un sector o
     #: actividad específica.
-    complemento: Optional[List[Union[TimbreFiscalDigital, Dict]]]
+    complemento: List[ComplementoType] = []
     #: Nodo opcional para recibir las extensiones al presente formato que sean de utilidad al contribuyente.
     #: Para las reglas de uso del mismo, referirse al formato origen.
     addenda: Optional[Dict]
 
-    _to_array = reusable_validator("complemento", "conceptos", pre=True)(dict2list)
+    _to_array = reusable_validator("complemento", "conceptos", pre=True)(dict2list_flatten)
     _parse_fecha = reusable_validator("fecha", pre=True)(parse_fecha)
     _validate_serie = reusable_validator("serie")(validate_length(min_length=1, max_length=25))
     _validate_folio = reusable_validator("folio")(validate_length(min_length=1, max_length=40))
@@ -364,15 +354,8 @@ class CFDI33(BaseModel):
         traslados = self.impuestos.traslados
         return sum([traslado.importe for traslado in traslados if traslado.impuesto == Impuesto.ieps])
 
-    def get_timbre_fiscal_digital(self) -> TimbreFiscalDigital:
+    def get_complemento(self, complemento_type: Type[AnyComplementoType]) -> AnyComplementoType:
         for complemento in self.complemento:
-            if isinstance(complemento, TimbreFiscalDigital):
+            if isinstance(complemento, complemento_type):
                 return complemento
-        raise ValueError("This CFDI is not certified")
-
-
-"""
-http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
-http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI/tdCFDI.xsd
-http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
-"""
+        raise ValueError(f"This CFDI has no {complemento_type.__name__}")

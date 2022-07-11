@@ -1,0 +1,2 @@
+pytest>=7.1.2
+devtools==0.8.0

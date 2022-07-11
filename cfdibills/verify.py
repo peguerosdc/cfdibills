@@ -1,5 +1,6 @@
 from cfdibills.api import SATConsultaResponse, consulta_cfdi_service
 from cfdibills.cfdis.cfdi33 import CFDI33
+from cfdibills.cfdis.complementos import TimbreFiscalDigital
 
 
 def verify(
@@ -30,7 +31,7 @@ def verify(
 
 def _verify_cfdi(cfdi: CFDI33) -> SATConsultaResponse:
     return _verify_cfdi_by_values(
-        str(cfdi.get_timbre_fiscal_digital().uuid),
+        str(cfdi.get_complemento(TimbreFiscalDigital).uuid),
         cfdi.emisor.rfc,
         cfdi.receptor.rfc,
         cfdi.total,
