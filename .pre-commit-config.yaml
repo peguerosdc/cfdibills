@@ -14,10 +14,15 @@ repos:
     rev: 'v0.961'
     hooks:
       - id: mypy
+        name: mypy (cfdibills)
         args: [--ignore-missing-imports, --pretty]
         files: cfdibills/
         additional_dependencies: [types-requests==2.28.0]
-        verbose: true
+      - id: mypy
+        name: mypy (tests)
+        args: [--ignore-missing-imports, --pretty]
+        files: tests/
+        additional_dependencies: [types-requests==2.28.0]
   - repo: https://github.com/MartinThoma/check-pip-compile
     rev: 0.1.1
     hooks:
