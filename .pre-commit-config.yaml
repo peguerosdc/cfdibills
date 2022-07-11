@@ -33,6 +33,7 @@ repos:
     hooks:
     - id: check-pip-compile
       name: did pip-compile?
+      files: requirements.in
       args:
         - requirements.in
   - repo: local
