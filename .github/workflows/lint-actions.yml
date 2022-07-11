@@ -1,0 +1,30 @@
+name: Lint
+on:
+  pull_request:
+    branches: [main]
+
+env:
+  REPOSITORY_NAME: $(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{REPOSITORY_NAME}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: psf/black@22.6.0
+        with:
+          options: "--line-length 120 --check --diff"
+  isort:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{REPOSITORY_NAME}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: jamescurtin/isort-action@master
+        with:
+          configuration: "--profile black --filter-files --check-only --diff"
+          requirementsFiles: "requirements.txt requirements_test.txt"
