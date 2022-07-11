@@ -47,7 +47,6 @@ required = (
     "install_requires",
     "extras_require",
     "classifiers",
-    "include_package_data",
 )
 
 missing = sorted(list(set(required) - set(SETUP_ARGS.keys())))

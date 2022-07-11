@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 # Package name used to install via pip (shown in `pip freeze` or `conda list`)
 MODULE_NAME = "cfdibills"
@@ -35,8 +35,10 @@ SETUP_ARGS = {
     "license_file": "LICENSE",
     "author": "Carlos Pegueros",
     "author_email": "peguerosdc@gmail.com",
-    "packages": find_packages(),
-    "include_package_data": True,
+    "packages": ["cfdibills"],
+    "package_data": {
+        "cfdibills": ["VERSION"],
+    },
     "url": f"https://github.com/peguerosdc/{MODULE_NAME}",
     "keywords": ["cfdi", "sat", "client", "mexico"],
     "install_requires": requirements_from_pip(REQUIREMENTS_FILE),
