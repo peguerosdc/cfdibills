@@ -1,5 +1,8 @@
+"""
+cfdibills main package
+"""
 from .io import read_xml
-from .verify import verify
+from .verifiers import verify
 
 
 def _get_version() -> str:

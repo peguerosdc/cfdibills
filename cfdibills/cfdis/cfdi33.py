@@ -1,3 +1,7 @@
+"""
+Schemas of CFDI v3.3.
+"""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -26,9 +30,16 @@ from cfdibills.cfdis.validators import (
     reusable_validator,
     validate_length,
 )
+from cfdibills.errors import ComplementoNotFound
 
 
 class Emisor(BaseModel):
+    """
+    Schema of a "Emisor" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para registrar la Clave del Registro Federal de Contribuyentes correspondiente al
     #: contribuyente emisor del comprobante.
     rfc: str
@@ -40,6 +51,12 @@ class Emisor(BaseModel):
 
 
 class Receptor(BaseModel):
+    """
+    Schema of a "Receptor" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para precisar la Clave del Registro Federal de Contribuyentes correspondiente al
     #: contribuyente receptor del comprobante.<
     rfc: str
@@ -60,6 +77,12 @@ class Receptor(BaseModel):
 
 
 class Traslado(BaseModel):
+    """
+    Schema of a "Concepto / Impuestos / Traslado" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para señalar la base para el cálculo del impuesto, la determinación de la base se realiza de
     #: acuerdo con las disposiciones fiscales vigentes. No se permiten valores negativos.
     base: float
@@ -76,6 +99,12 @@ class Traslado(BaseModel):
 
 
 class Retencion(BaseModel):
+    """
+    Schema of a "Concepto / Impuestos / Retencion" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para señalar la base para el cálculo del impuesto, la determinación de la base se realiza de
     #: acuerdo con las disposiciones fiscales vigentes. No se permiten valores negativos.
     base: float
@@ -92,6 +121,12 @@ class Retencion(BaseModel):
 
 
 class ImpuestosConcepto(BaseModel):
+    """
+    Schema of a "Concepto / Impuestos" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Nodo opcional para asentar los impuestos trasladados aplicables al presente concepto.
     traslados: List[Traslado] = []
     #: Nodo opcional para asentar los impuestos retenidos aplicables al presente concepto.
@@ -101,6 +136,12 @@ class ImpuestosConcepto(BaseModel):
 
 
 class InformacionAduanera(BaseModel):
+    """
+    Schema of a "Informacion Aduanera" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para expresar el número del pedimento que ampara la importación del bien que se expresa en el
     #: siguiente formato: últimos 2 dígitos del año de validación seguidos por dos espacios, 2 dígitos de la aduana de
     #: despacho seguidos por dos espacios, 4 dígitos del número de la patente seguidos por dos espacios, 1 dígito que
@@ -111,6 +152,12 @@ class InformacionAduanera(BaseModel):
 
 
 class CuentaPredial(BaseModel):
+    """
+    Schema of a "Cuenta Predial" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para precisar el número de la cuenta predial del inmueble cubierto por el presente concepto,
     #: o bien para incorporar los datos de identificación del certificado de participación inmobiliaria no amortizable,
     #: tratándose de arrendamiento.
@@ -118,6 +165,12 @@ class CuentaPredial(BaseModel):
 
 
 class Parte(BaseModel):
+    """
+    Schema of a "Parte" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Nodo opcional para introducir la información aduanera aplicable cuando se trate de ventas de primera mano de
     #: mercancías importadas o se trate de operaciones de comercio exterior con bienes o servicios.
     informacion_aduanera: List[InformacionAduanera] = []
@@ -146,6 +199,12 @@ class Parte(BaseModel):
 
 
 class Concepto(BaseModel):
+    """
+    Schema of a "Concepto" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Nodo opcional para capturar los impuestos aplicables al presente concepto. Cuando un concepto no registra un
     #: impuesto, implica que no es objeto del mismo.
     impuestos: Optional[ImpuestosConcepto]
@@ -196,6 +255,12 @@ class Concepto(BaseModel):
 
 
 class RetencionCFDI(BaseModel):
+    """
+    Schema of a "Comprobante / Retencion" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para señalar la clave del tipo de impuesto retenido
     impuesto: Impuesto
     #: Atributo requerido para señalar el monto del impuesto retenido. No se permiten valores negativos.
@@ -203,6 +268,12 @@ class RetencionCFDI(BaseModel):
 
 
 class TrasladoCFDI(BaseModel):
+    """
+    Schema of a "Comprobante / Traslado" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para señalar la clave del tipo de impuesto trasladado.
     impuesto: Impuesto
     #: Atributo requerido para señalar la clave del tipo de factor que se aplica a la base del impuesto.
@@ -216,6 +287,12 @@ class TrasladoCFDI(BaseModel):
 
 
 class ImpuestosCFDI(BaseModel):
+    """
+    Schema of a "Comprobante / Impuestos" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Nodo condicional para capturar los impuestos retenidos aplicables. Es requerido cuando en los conceptos se
     #: registre algún impuesto retenido
     retenciones: List[RetencionCFDI] = []
@@ -235,6 +312,12 @@ class ImpuestosCFDI(BaseModel):
 
 
 class CfdiRelacionado(BaseModel):
+    """
+    Schema of a "Cfdi Relacionado" of a CFDI v3.3.
+
+    Based on: http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    """
+
     #: Atributo requerido para registrar el folio fiscal (UUID) de un CFDI relacionado con el presente comprobante,
     #: por ejemplo: Si el CFDI relacionado es un comprobante de traslado que sirve para registrar el movimiento de la
     #: mercancía. Si este comprobante se usa como nota de crédito o nota de débito del comprobante relacionado.
@@ -248,11 +331,13 @@ class CfdiRelacionado(BaseModel):
 
 class CFDI33(BaseModel):
     """
-    Schema of a CFDI version 3.3 based on:
+    Schema of a CFDI version 3.3.
 
-    http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
-    http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI/tdCFDI.xsd
-    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    Based on:
+
+    * http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd
+    * http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI/tdCFDI.xsd
+    * http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
     """
 
     #: Atributo requerido con valor prefijado a 3.3 que indica la versión del estándar bajo el que se encuentra
@@ -356,16 +441,60 @@ class CFDI33(BaseModel):
             raise ValueError(f"{no_certificado=} must be numeric of length 20")
         return no_certificado
 
-    def get_total_iva(self) -> float:
-        traslados = self.impuestos.traslados
-        return sum([traslado.importe for traslado in traslados if traslado.impuesto == Impuesto.iva])
+    def get_total_transferred_tax(self, tax_type: Impuesto) -> float:
+        """
+        Computes the total tax transferred (from ``impuestos.traslados``) of type ``tax_type``.
 
-    def get_total_ieps(self) -> float:
+        Parameters
+        ----------
+        tax_type: Impuesto
+            Type of tax to sum.
+
+        Returns
+        -------
+        float
+            Sum of all the transferred taxes of type ``tax_type``.
+        """
         traslados = self.impuestos.traslados
-        return sum([traslado.importe for traslado in traslados if traslado.impuesto == Impuesto.ieps])
+        return sum([traslado.importe for traslado in traslados if traslado.impuesto == tax_type])
+
+    def get_total_withheld_tax(self, tax_type: Impuesto) -> float:
+        """
+        Computes the total tax get_total_withheld_tax (from ``impuestos.retenciones``) of type ``tax_type``.
+
+        Parameters
+        ----------
+        tax_type: Impuesto
+            Type of tax to sum.
+
+        Returns
+        -------
+        float
+            Sum of all the withheld taxes of type ``tax_type``.
+        """
+        traslados = self.impuestos.retenciones
+        return sum([traslado.importe for traslado in traslados if traslado.impuesto == tax_type])
 
     def get_complemento(self, complemento_type: Type[AnyComplementoType]) -> AnyComplementoType:
+        """
+        Retrieves the complemento of type ``complemento_type``.
+
+        Parameters
+        ----------
+        complemento_type: Type[AnyComplementoType]
+            Type of complemento to find.
+
+        Returns
+        -------
+        AnyComplementoType
+            Complemento found in this CFDI of type ``complemento_type``
+
+        Raises
+        -------
+        ComplementoNotFound
+            When the CFDI doesn't contain a complemento of type ``complemento_type``
+        """
         for complemento in self.complemento:
             if isinstance(complemento, complemento_type):
                 return complemento
-        raise ValueError(f"This CFDI has no {complemento_type.__name__}")
+        raise ComplementoNotFound(f"This CFDI has no {complemento_type.__name__}")

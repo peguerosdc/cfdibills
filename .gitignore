@@ -127,7 +127,13 @@ venv.bak/
 # mypy
 .mypy_cache/
 .dmypy.json
+
 dmypy.json
+
+# sphinx
+docs/_build
+docs/generated
+docs/_autosummary
 
 # Pyre type checker
 .pyre/
