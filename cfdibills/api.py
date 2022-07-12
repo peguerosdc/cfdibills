@@ -3,6 +3,7 @@ Definition of the SAT's API used to verify CFDIs.
 """
 
 from dataclasses import dataclass
+from typing import Optional
 
 import requests
 import xmltodict
@@ -23,7 +24,7 @@ class SATConsultaResponse:
     #: Estado
     estado: str
     #: Estatus cancelación
-    estatus_cancelacion: str
+    estatus_cancelacion: Optional[str]
     #: Validación EFOS
     validacion_efos: str
 

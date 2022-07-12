@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 # Package name used to install via pip (shown in `pip freeze` or `conda list`)
 MODULE_NAME = "cfdibills"
@@ -35,7 +35,7 @@ SETUP_ARGS = {
     "license_file": "LICENSE",
     "author": "Carlos Pegueros",
     "author_email": "peguerosdc@gmail.com",
-    "packages": ["cfdibills"],
+    "packages": find_packages(exclude=["tests"]),
     "package_data": {
         "cfdibills": ["VERSION"],
     },

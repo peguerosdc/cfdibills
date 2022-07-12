@@ -30,7 +30,7 @@ from cfdibills.cfdis.validators import (
     reusable_validator,
     validate_length,
 )
-from cfdibills.errors import ComplementoNotFound
+from cfdibills.errors import ComplementoNotFoundError
 
 
 class Emisor(BaseModel):
@@ -249,7 +249,7 @@ class Concepto(BaseModel):
     importe: float
     #: Atributo opcional para representar el importe de los descuentos aplicables al concepto. No se permiten valores
     #: negativos.
-    descuento: Optional[float]
+    descuento: float = 0.0
 
     _complemento_to_array = reusable_validator("complemento_concepto", pre=True)(dict2list)
 
@@ -412,7 +412,7 @@ class CFDI33(BaseModel):
     #: Nodo requerido para listar los conceptos cubiertos por el comprobante.
     conceptos: List[Concepto]
     #: Nodo condicional para expresar el resumen de los impuestos aplicables.
-    impuestos: ImpuestosCFDI
+    impuestos: Optional[ImpuestosCFDI]
     #: Nodo opcional donde se incluye el complemento Timbre Fiscal Digital de manera obligatoria y los nodos
     #: complementarios determinados por el SAT, de acuerdo con las disposiciones particulares para un sector o
     #: actividad específica.
@@ -455,8 +455,8 @@ class CFDI33(BaseModel):
         float
             Sum of all the transferred taxes of type ``tax_type``.
         """
-        traslados = self.impuestos.traslados
-        return sum([traslado.importe for traslado in traslados if traslado.impuesto == tax_type])
+        taxes = self.impuestos.traslados if self.impuestos else []
+        return sum([tax.importe for tax in taxes if tax.impuesto == tax_type])
 
     def get_total_withheld_tax(self, tax_type: Impuesto) -> float:
         """
@@ -472,8 +472,8 @@ class CFDI33(BaseModel):
         float
             Sum of all the withheld taxes of type ``tax_type``.
         """
-        traslados = self.impuestos.retenciones
-        return sum([traslado.importe for traslado in traslados if traslado.impuesto == tax_type])
+        taxes = self.impuestos.retenciones if self.impuestos else []
+        return sum([tax.importe for tax in taxes if tax.impuesto == tax_type])
 
     def get_complemento(self, complemento_type: Type[AnyComplementoType]) -> AnyComplementoType:
         """
@@ -491,10 +491,10 @@ class CFDI33(BaseModel):
 
         Raises
         -------
-        ComplementoNotFound
+        ComplementoNotFoundError
             When the CFDI doesn't contain a complemento of type ``complemento_type``
         """
         for complemento in self.complemento:
             if isinstance(complemento, complemento_type):
                 return complemento
-        raise ComplementoNotFound(f"This CFDI has no {complemento_type.__name__}")
+        raise ComplementoNotFoundError(f"This CFDI has no {complemento_type.__name__}")
