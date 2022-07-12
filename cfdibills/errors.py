@@ -15,7 +15,7 @@ class InvalidCFDIError(Exception):
     pass
 
 
-class ComplementoNotFound(Exception):
+class ComplementoNotFoundError(Exception):
     """Raised when a CFDI doesn't have a Complemento of a specific type."""
 
     pass
