@@ -1,3 +1,6 @@
+"""
+Module to verify a CFDI with the SAT.
+"""
 from cfdibills.api import SATConsultaResponse, consulta_cfdi_service
 from cfdibills.cfdis.cfdi33 import CFDI33
 from cfdibills.cfdis.complementos import TimbreFiscalDigital
@@ -11,25 +14,39 @@ def verify(
     total_facturado: float = None,
 ) -> SATConsultaResponse:
     """
-    Verifies a bill's status with the SAT. The bill can be given as a CFDI33 or as its details (uuid, rfc_emisor,
+    Verifies a bill's status with the SAT. The bill can be given as a ``CFDI33`` or as its details (uuid, rfc_emisor,
     rfc_receptor, total_facturado).
+
+    When the ``CFDI33`` is present, no other detail is used to query the SAT's web service. If the ``CFDI33`` is not
+    present, then all the other details must be provided.
 
     Parameters
     ----------
-    cfdi
-    uuid
-    rfc_emisor
-    rfc_receptor
-    total_facturado
+    cfdi: CFDI33
+        CFDI v3.3 object to check. Details are overriden by this argument when passed.
+    uuid: str
+        UUID of the CFDI to check (if details are given).
+    rfc_emisor: str
+        RFC of the issuer of the CFDI to check (if details are given).
+    rfc_receptor: str
+        RFC of the recipient of the CFDI to check (if details are given).
+    total_facturado: str
+        Total amount of money billed in the CFDI to check (if details are given).
 
     Returns
     -------
     SATConsultaResponse
+        Status of the CFDI as verified by SAT.
+
+    Raises
+    ------
+    ValueError
+        When no CFDI is provided or there are missing details.
     """
-    # this is validated in _verify_cfdi_by_values
     return (
         _verify_cfdi(cfdi)
         if cfdi
+        # this is validated in _verify_cfdi_by_values
         else _verify_cfdi_by_values(uuid, rfc_emisor, rfc_receptor, total_facturado)  # type: ignore
     )
 

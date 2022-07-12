@@ -1,12 +1,18 @@
+"""
+Module to read CFDIs.
+"""
+
 from __future__ import annotations
 
 import re
 from decimal import Decimal
 from typing import Callable, Type, Union
 
+import pydantic
 import xmltodict
 
 from cfdibills.cfdis.cfdi33 import CFDI33
+from cfdibills.errors import InvalidCFDIError, UnsupportedCFDIError
 
 _name_pattern = re.compile(r"(.)([A-Z][a-z]+)")
 _snake_pattern = re.compile(r"([a-z0-9])([A-Z])")
@@ -17,15 +23,19 @@ def _get_cfdi_with_version(candidate: dict) -> tuple[dict, str]:
         cfdi = candidate["comprobante"]
         version = cfdi["version"]
     except KeyError as e:
-        raise ValueError(f"The XML given does not contain a {e.args[0]}")
+        raise InvalidCFDIError(f"The XML given does not contain a '{e.args[0]}'.")
     return cfdi, version
 
 
 def _parse_cfdi(cfdi: dict, version: str) -> CFDI33:
     mapper = {"3.3": CFDI33}
     if (parser := mapper.get(version, None)) is None:
-        raise ValueError(f"Version {version} is not supported. It must be one of {mapper.keys()}.")
-    return parser.parse_obj(cfdi)
+        raise UnsupportedCFDIError(f"Version '{version}' is not supported. It must be one of {mapper.keys()}.")
+    try:
+        parsed = parser.parse_obj(cfdi)
+    except pydantic.ValidationError as e:
+        raise InvalidCFDIError(str(e)) from None
+    return parsed
 
 
 def _camel_to_snake(camelcase: str) -> str:
@@ -33,10 +43,15 @@ def _camel_to_snake(camelcase: str) -> str:
     Converts a camelCase string to a snake_case string
     Source: https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
 
-    Args:
-        camelcase: string to convert
+    Parameters
+    ----------
+    camelcase: str
+        string to convert
 
-    Returns: snake_cased string
+    Returns
+    -------
+    str
+        snake_cased string
     """
     camelcase = _name_pattern.sub(r"\1_\2", camelcase)
     return _snake_pattern.sub(r"\1_\2", camelcase).lower()
@@ -60,6 +75,16 @@ def normalize_dict_keys(ugly_dict: dict) -> dict:
     * if the item is a Decimal, map it to a float python number
     * if the item is a dictionary, normalize its children
     * if it is an array, normalize every item in it
+
+    Parameters
+    ----------
+    ugly_dict: dict
+        Dictionary as output from xmltodict
+
+    Returns
+    -------
+    dict
+        Dictionary with keys in camel_case format
     """
     result = dict()
     normalization: dict[Type[Union[list, dict, Decimal]], Callable] = {
@@ -80,7 +105,7 @@ def normalize_dict_keys(ugly_dict: dict) -> dict:
 
 def read_xml(path: str) -> CFDI33:
     """
-    Reads a CFDI in a .xml and maps it to a python object.
+    Reads a CFDI in a .xml and maps it to a pydantic object.
 
     Parameters
     ----------
@@ -89,6 +114,14 @@ def read_xml(path: str) -> CFDI33:
     Returns
     -------
     CFDI33
+        Pydantic version of the
+
+    Raises
+    ------
+    InvalidCFDIError
+        If the xml is not in a valid format
+    UnsupportedCFDIError
+        If the CFDI version of the XML is not supported
     """
     with open(path, "rb") as f:
         raw_xml = xmltodict.parse(f, dict_constructor=dict)

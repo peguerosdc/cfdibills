@@ -1,3 +1,7 @@
+"""
+Complementos available to appear in a CFDI.
+"""
+
 from datetime import datetime
 from typing import Dict, List, Optional, TypeVar, Union
 from uuid import UUID

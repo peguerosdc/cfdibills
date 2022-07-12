@@ -1,7 +1,17 @@
+"""
+Catalogs required to define CFDIs.
+"""
+
 from enum import Enum
 
 
 class UsoCFDI(str, Enum):
+    """
+    Catalog of "Uso CFDI".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     #: Adquisición de mercancías
     G01 = "G01"
     #: Devoluciones, descuentos o bonificaciones
@@ -55,6 +65,12 @@ class UsoCFDI(str, Enum):
 
 
 class Pais(str, Enum):
+    """
+    Catalog of "Pais".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     AFG = "AFG"
     ALA = "ALA"
     ALB = "ALB"
@@ -308,6 +324,12 @@ class Pais(str, Enum):
 
 
 class Impuesto(str, Enum):
+    """
+    Catalog of "Impuesto".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     #: Impuesto Sobre la Renta (ISR)
     isr = "001"
     #: Impuesto al Valor Agregado (IVA)
@@ -317,6 +339,12 @@ class Impuesto(str, Enum):
 
 
 class TipoFactor(str, Enum):
+    """
+    Catalog of "Tipo Factor".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     #: Tasa
     tasa = "Tasa"
     #: Cuota
@@ -326,14 +354,31 @@ class TipoFactor(str, Enum):
 
 
 class TipoDeComprobante(str, Enum):
+    """
+    Catalog of "Tipo De Comprobante".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
+    #: Ingreso
     ingreso = "I"
+    #: Egreso
     egreso = "E"
+    #: Traslado
     traslado = "T"
+    #: Nomina
     nomina = "N"
+    #: Pago
     pago = "P"
 
 
 class MetodoDePago(str, Enum):
+    """
+    Catalog of "Metodo De Pago".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     #: Pago en una sola exhibición
     pue = "PUE"
     #: Pago en parcialidades o diferido
@@ -341,6 +386,12 @@ class MetodoDePago(str, Enum):
 
 
 class FormaPago(str, Enum):
+    """
+    Catalog of "Forma Pago".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     #: Efectivo
     efectivo = "01"
     #: Cheque nominativo
@@ -388,6 +439,12 @@ class FormaPago(str, Enum):
 
 
 class Moneda(str, Enum):
+    """
+    Catalog of "Moneda".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     AED = "AED"
     AFN = "AFN"
     ALL = "ALL"
@@ -569,6 +626,12 @@ class Moneda(str, Enum):
 
 
 class TipoRelacion(str, Enum):
+    """
+    Catalog of "Tipo Relacion".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
     #: Nota de crédito de los documentos relacionados
     nota_credito = "01"
     #: Nota de débito de los documentos relacionados

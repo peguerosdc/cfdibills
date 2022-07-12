@@ -1,3 +1,7 @@
+"""
+Definition of the SAT's API used to verify CFDIs.
+"""
+
 from dataclasses import dataclass
 
 import requests
@@ -8,29 +12,25 @@ import xmltodict
 class SATConsultaResponse:
     """
     Encloses the response of the ConsultaCFDIService web service when called with a Consulta action
+
+    See: https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?xsd=xsd2
     """
 
+    #: Código estatus
     codigo_estatus: str
+    #: Es Cancelable
     es_cancelable: str
+    #: Estado
     estado: str
+    #: Estatus cancelación
     estatus_cancelacion: str
+    #: Validación EFOS
     validacion_efos: str
 
 
 def _call_sat(uuid: str, rfc_emisor: str, rfc_receptor: str, total_facturado: float) -> dict:
     """
     Sends a SOAP request to SAT's web service to get the status of a CFDI
-
-    Parameters
-    ----------
-    uuid
-    rfc_emisor
-    rfc_receptor
-    total_facturado
-
-    Returns
-    -------
-    A dictionary with the parse response from SAT
     """
     body = f"""
     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">
@@ -60,16 +60,23 @@ def consulta_cfdi_service(uuid: str, rfc_emisor: str, rfc_receptor: str, total_f
     """
     Gets the status of the given CFDI by calling SAT's web service.
 
+    See: https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?wsdl
+
     Parameters
     ----------
-    uuid
-    rfc_emisor
-    rfc_receptor
-    total_facturado
+    uuid: str
+        UUID of the CFDI to check
+    rfc_emisor: str
+        RFC if the issuer of the CFDI to check
+    rfc_receptor: str
+        RFC if the recipient of the CFDI to check
+    total_facturado: float
+        Total amount of money billed in the CFDI
 
     Returns
     -------
     SATConsultaResponse
+        Container of the result emmitted by SAT's web service
     """
     data = _call_sat(uuid, rfc_emisor, rfc_receptor, total_facturado)
     try:
