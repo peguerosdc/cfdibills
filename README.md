@@ -2,14 +2,13 @@
 [![PyPI Latest Release](https://img.shields.io/pypi/v/cfdibills.svg)](https://pypi.org/project/cfdibills/)
 [![codecov](https://codecov.io/gh/peguerosdc/cfdibills/branch/main/graph/badge.svg?token=IE6CNFJJMQ)](https://codecov.io/gh/peguerosdc/cfdibills)
 
-Utility to inspect and verify CFDI (Mexican invoice) versions 3.3 and 4.0
+Utility to parse CFDI (Mexican invoice) versions 3.3 and 4.0 and validate their status against the SAT.
 
 ## Features
 
 * Load a CFDI in XML format into a [pydantic](https://github.com/samuelcolvin/pydantic) object
+  * CFDIs are validated against the XSD schema, but a thorough check (i.e. conditional values) is not performed.
 * Query the status of a CFDI via SAT's web service
-* Only presence of required fields is validated, but this package doesn't perform a thorough validation of the CFDI
-standard.
 * **DOESN'T REQUIRE** additional dependencies to read the XML like libxml2-dev, libxslt-dev
 
 
@@ -23,12 +22,12 @@ pip install cfdibills
 
 ## Examples
 
-You can load a verify a bill directly from its XML:
+You can load and verify a bill directly from its XML:
 
 ````python
 import cfdibills
 
-cfdi = cfdibills.read_xml("path/to/invoice.xml")
+cfdi = cfdibills.read_xml("path/to/bill.xml")
 status = cfdibills.verify(cfdi)
 ````
 
@@ -37,8 +36,21 @@ Or you can verify it manually:
 ````python
 import cfdibills
 
-cfdibills.verify(uuid="folio fiscal", rfc_emisor="re", rfc_receptor="rr", total_facturado=150.00)
+status = cfdibills.verify(uuid="folio fiscal", rfc_emisor="re", rfc_receptor="rr", total_facturado=150.00)
 ````
+
+In both cases, `status`  would look something like this:
+
+````python
+SATConsultaResponse(
+    codigo_estatus='S - Comprobante obtenido satisfactoriamente.',
+    es_cancelable='Cancelable con aceptación',
+    estado='Vigente',
+    estatus_cancelacion=None,
+    validacion_efos='200',
+)
+````
+
 
 ## Contributing
 

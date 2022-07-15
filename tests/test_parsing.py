@@ -2,7 +2,7 @@ from devtools import debug
 from pytest import mark
 
 from cfdibills import read_xml
-from cfdibills.cfdis.complementos import (
+from cfdibills.schemas.complementos import (
     Aerolineas,
     CertificadoDeDestruccion,
     ComercioExterior,

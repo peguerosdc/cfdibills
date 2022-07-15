@@ -1,13 +1,16 @@
 """
 Module to verify a CFDI with the SAT.
 """
+from typing import Union
+
 from cfdibills.api import SATConsultaResponse, consulta_cfdi_service
-from cfdibills.cfdis.cfdi33 import CFDI33
-from cfdibills.cfdis.complementos import TimbreFiscalDigital
+from cfdibills.schemas.cfdi33 import CFDI33
+from cfdibills.schemas.cfdi40 import CFDI40
+from cfdibills.schemas.complementos import TimbreFiscalDigital
 
 
 def verify(
-    cfdi: CFDI33 = None,
+    cfdi: Union[CFDI33, CFDI40] = None,
     uuid: str = None,
     rfc_emisor: str = None,
     rfc_receptor: str = None,
@@ -51,7 +54,7 @@ def verify(
     )
 
 
-def _verify_cfdi(cfdi: CFDI33) -> SATConsultaResponse:
+def _verify_cfdi(cfdi: Union[CFDI33, CFDI40]) -> SATConsultaResponse:
     return _verify_cfdi_by_values(
         str(cfdi.get_complemento(TimbreFiscalDigital).uuid),
         cfdi.emisor.rfc,
