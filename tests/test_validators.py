@@ -1,6 +1,3 @@
-from datetime import datetime
-
-import pytest
 from pytest import mark
 
 from cfdibills.schemas.validators import dict2list_flatten

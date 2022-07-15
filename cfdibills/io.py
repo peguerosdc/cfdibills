@@ -28,6 +28,12 @@ def _get_cfdi_with_version(candidate: dict) -> tuple[dict, str]:
     return cfdi, version
 
 
+def _xml_to_json(path: str, normalize: bool = True) -> dict:
+    with open(path, "rb") as f:
+        raw_xml = xmltodict.parse(f, dict_constructor=dict)
+    return normalize_dict_keys(raw_xml) if normalize else raw_xml
+
+
 def _parse_cfdi(cfdi: dict, version: str) -> Union[CFDI33, CFDI40]:
     mapper = {"3.3": CFDI33, "4.0": CFDI40}
     if (parser := mapper.get(version, None)) is None:
@@ -125,8 +131,6 @@ def read_xml(path: str) -> Union[CFDI33, CFDI40]:
     UnsupportedCFDIError
         If the CFDI version of the XML is not supported
     """
-    with open(path, "rb") as f:
-        raw_xml = xmltodict.parse(f, dict_constructor=dict)
-    normalized_xml = normalize_dict_keys(raw_xml)
+    normalized_xml = _xml_to_json(path)
     cfdi, version = _get_cfdi_with_version(normalized_xml)
     return _parse_cfdi(cfdi, version)

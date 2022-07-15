@@ -157,7 +157,9 @@ class InformacionAduanera(BaseModel):
     #: corresponde al último dígito del año en curso, salvo que se trate de un pedimento consolidado iniciado en el año
     #: inmediato anterior o del pedimento original de una rectificación, seguido de 6 dígitos de la numeración
     #: progresiva por aduana.
-    numero_pedimento: Annotated[str, Field(min_length=21, max_length=21, regex=r"[0-9]{2} [0-9]{2} [0-9]{4} [0-9]{7}")]
+    numero_pedimento: Annotated[
+        str, Field(min_length=21, max_length=21, regex=r"[0-9]{2}  [0-9]{2}  [0-9]{4}  [0-9]{7}")
+    ]
 
 
 class CuentaPredial(BaseModel):
@@ -205,6 +207,8 @@ class Parte(BaseModel):
     #: equivalente al resultado de multiplicar la cantidad por el valor unitario expresado en la parte.
     #: No se permiten valores negativos.
     importe: Optional[NonNegativeSixDecimals]
+
+    _to_array = reusable_validator("informacion_aduanera", pre=True)(dict2list)
 
 
 class ACuentaTerceros(BaseModel):
@@ -286,7 +290,7 @@ class Concepto(BaseModel):
     a_cuenta_terceros: List[ACuentaTerceros] = []
 
     _to_array = reusable_validator(
-        "complemento_concepto", "cuenta_predial", "informacion_aduanera", "a_cuenta_terceros", pre=True
+        "complemento_concepto", "cuenta_predial", "informacion_aduanera", "a_cuenta_terceros", "parte", pre=True
     )(dict2list)
 
 
@@ -363,9 +367,22 @@ class CfdiRelacionado(BaseModel):
     #: Si este comprobante es una devolución sobre el comprobante relacionado. Si éste sustituye a una factura
     #: cancelada.
     uuid: UUID
+
+
+class CfdiRelacionados(BaseModel):
+    """
+    Schema of a "Cfdi Relacionados" of a CFDI v4.0.
+
+    Based on: https://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd
+    """
+
     #: Atributo requerido para indicar la clave de la relación que existe entre éste que se esta generando y el o
     #: los CFDI previos.
     tipo_relacion: TipoRelacion
+    #: Cfdi Relacionado
+    cfdi_relacionado: List[CfdiRelacionado]
+
+    _to_array = reusable_validator("cfdi_relacionado", pre=True)(dict2list)
 
 
 class InformacionGlobal(BaseModel):
@@ -458,7 +475,7 @@ class CFDI40(BaseModel, CFDIMixin):
     #: registra un tipo de cambio o un total fuera del rango establecido.
     confirmacion: Optional[Annotated[str, Field(min_length=5, max_length=5, regex=r"[0-9a-zA-Z]{5}")]]
     #: Nodo opcional para precisar la información de los comprobantes relacionados.
-    cfdi_relacionados: Optional[List[CfdiRelacionado]]
+    cfdi_relacionados: Optional[CfdiRelacionados]
     #: Nodo requerido para expresar la información del contribuyente emisor del comprobante.
     emisor: Emisor
     #: Nodo requerido para precisar la información del contribuyente receptor del comprobante

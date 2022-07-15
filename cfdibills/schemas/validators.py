@@ -24,6 +24,8 @@ def dict2list_flatten(original: Union[dict, list]) -> list:
                 raise ValueError(f"Unsupported type in {key}. Must be 'list' or 'dict'")
     elif isinstance(original, list):
         result = original
+    elif original is None:
+        result = []
     else:
         raise ValueError("Unsupported type. Must be 'list' or 'dict'")
     return result

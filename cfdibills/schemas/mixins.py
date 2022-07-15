@@ -1,3 +1,7 @@
+"""
+Mixins to be used with CFDIs.
+"""
+
 from typing import List, Optional, Protocol, Type
 
 from cfdibills.errors import ComplementoNotFoundError
@@ -6,20 +10,26 @@ from cfdibills.schemas.complementos import AnyComplementoType, ComplementoType
 from cfdibills.schemas.fields import NonNegativeSixDecimals
 
 
-class SingleTaxProto(Protocol):
+class _SingleTaxProto(Protocol):
     impuesto: Impuesto
     importe: NonNegativeSixDecimals
 
 
-class ImpuestosProto(Protocol):
-    traslados: List[SingleTaxProto]
-    retenciones: List[SingleTaxProto]
+class _ImpuestosProto(Protocol):
+    traslados: List[_SingleTaxProto]
+    retenciones: List[_SingleTaxProto]
 
 
 class CFDIMixin:
+    """
+    Behavior to be extended by a CFDI. This mixin is meant to be used with any version of CFDI.
+    """
+
     # Type stubs are used to tell mypy to expect these attrs to exist.
     # See: https://mypy.readthedocs.io/en/stable/protocols.html#defining-subprotocols-and-subclassing-protocols
-    impuestos: Optional[ImpuestosProto]
+    #: Type stub of CFDIx.impuestos
+    impuestos: Optional[_ImpuestosProto]
+    #: Type stub of CFDIx.complemento
     complemento: List[ComplementoType] = []
 
     def get_total_transferred_tax(self, tax_type: Impuesto) -> float:
