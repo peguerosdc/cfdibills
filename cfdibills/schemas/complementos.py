@@ -8,10 +8,9 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from cfdibills.cfdis.validators import (
+from cfdibills.schemas.validators import (
     dict2list,
     dict2list_flatten,
-    parse_fecha,
     reusable_validator,
 )
 
@@ -46,8 +45,6 @@ class TimbreFiscalDigital(BaseModel):
     #: Atributo requerido para contener el sello digital del Timbre Fiscal Digital, al que hacen referencia las reglas
     #: de la Resolución Miscelánea vigente. El sello debe ser expresado como una cadena de texto en formato Base 64.
     sello_sat: str
-
-    _parse_fecha = reusable_validator("fecha_timbrado", pre=True)(parse_fecha)
 
 
 class Aerolineas(BaseModel):
@@ -131,8 +128,6 @@ class CertificadoDeDestruccion(BaseModel):
         #: Atributo requerido para precisar la aduana a través de la cual se regularizó la legal estancia en el país
         #: del vehículo destruido.
         aduana: str
-
-        _parse_fecha = reusable_validator("fecha", pre=True)(parse_fecha)
 
     #: Atributo requerido para la expresión de la versión del complemento
     version: str

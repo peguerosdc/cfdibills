@@ -1,6 +1,6 @@
 """
 CFDIs definition.
 """
+from . import cfdi33, cfdi40
 from .catalogs import *
-from .cfdi33 import *
 from .complementos import *

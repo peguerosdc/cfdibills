@@ -650,3 +650,101 @@ class TipoRelacion(str, Enum):
     pagos_en_parcialidades = "08"
     #: Factura Generada por Pagos Diferidos
     pagos_diferidos = "09"
+
+
+class RegimenFiscal(str, Enum):
+    """
+    Catalog of "Regimen Fiscal".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
+    r601 = "601"
+    r603 = "603"
+    r605 = "605"
+    r606 = "606"
+    r607 = "607"
+    r608 = "608"
+    r609 = "609"
+    r610 = "610"
+    r611 = "611"
+    r612 = "612"
+    r614 = "614"
+    r615 = "615"
+    r616 = "616"
+    r620 = "620"
+    r621 = "621"
+    r622 = "622"
+    r623 = "623"
+    r624 = "624"
+    r625 = "625"
+    r626 = "626"
+    r628 = "628"
+    r629 = "629"
+    r630 = "630"
+
+
+class ObjetoImp(str, Enum):
+    """
+    Catalog of "Objecto Imp".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
+    o01 = "01"
+    o02 = "02"
+    o03 = "03"
+
+
+class Periodicidad(str, Enum):
+    """
+    Catalog of "Periodicidad".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
+    p01 = "01"
+    p02 = "02"
+    p03 = "03"
+    p04 = "04"
+    p05 = "05"
+
+
+class Meses(str, Enum):
+    """
+    Catalog of "Meses".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
+    m01 = "01"
+    m02 = "02"
+    m03 = "03"
+    m04 = "04"
+    m05 = "05"
+    m06 = "06"
+    m07 = "07"
+    m08 = "08"
+    m09 = "09"
+    m10 = "10"
+    m11 = "11"
+    m12 = "12"
+    m13 = "13"
+    m14 = "14"
+    m15 = "15"
+    m16 = "16"
+    m17 = "17"
+    m18 = "18"
+
+
+class Exportacion(str, Enum):
+    """
+    Catalog of "Exportacion".
+
+    http://www.sat.gob.mx/sitio_internet/cfd/catalogos/catCFDI.xsd
+    """
+
+    e01 = "01"
+    e02 = "02"
+    e03 = "03"
+    e04 = "04"

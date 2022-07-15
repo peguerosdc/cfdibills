@@ -11,8 +11,9 @@ from typing import Callable, Type, Union
 import pydantic
 import xmltodict
 
-from cfdibills.cfdis.cfdi33 import CFDI33
 from cfdibills.errors import InvalidCFDIError, UnsupportedCFDIError
+from cfdibills.schemas.cfdi33 import CFDI33
+from cfdibills.schemas.cfdi40 import CFDI40
 
 _name_pattern = re.compile(r"(.)([A-Z][a-z]+)")
 _snake_pattern = re.compile(r"([a-z0-9])([A-Z])")
@@ -27,12 +28,19 @@ def _get_cfdi_with_version(candidate: dict) -> tuple[dict, str]:
     return cfdi, version
 
 
-def _parse_cfdi(cfdi: dict, version: str) -> CFDI33:
-    mapper = {"3.3": CFDI33}
+def _xml_to_json(path: str, normalize: bool = True) -> dict:
+    with open(path, "rb") as f:
+        raw_xml = xmltodict.parse(f, dict_constructor=dict)
+    return normalize_dict_keys(raw_xml) if normalize else raw_xml
+
+
+def _parse_cfdi(cfdi: dict, version: str) -> Union[CFDI33, CFDI40]:
+    mapper = {"3.3": CFDI33, "4.0": CFDI40}
     if (parser := mapper.get(version, None)) is None:
         raise UnsupportedCFDIError(f"Version '{version}' is not supported. It must be one of {mapper.keys()}.")
     try:
-        parsed = parser.parse_obj(cfdi)
+        # Mypy doesn't know that the parser is also of type BaseModel, so we have to tell it to ignore this line
+        parsed = parser.parse_obj(cfdi)  # type: ignore
     except pydantic.ValidationError as e:
         raise InvalidCFDIError(str(e)) from None
     return parsed
@@ -103,7 +111,7 @@ def normalize_dict_keys(ugly_dict: dict) -> dict:
     return result
 
 
-def read_xml(path: str) -> CFDI33:
+def read_xml(path: str) -> Union[CFDI33, CFDI40]:
     """
     Reads a CFDI in a .xml and maps it to a pydantic object.
 
@@ -113,8 +121,8 @@ def read_xml(path: str) -> CFDI33:
 
     Returns
     -------
-    CFDI33
-        Pydantic version of the
+    Union[CFDI33, CFDI40]
+        Pydantic object of the CFDI
 
     Raises
     ------
@@ -123,8 +131,6 @@ def read_xml(path: str) -> CFDI33:
     UnsupportedCFDIError
         If the CFDI version of the XML is not supported
     """
-    with open(path, "rb") as f:
-        raw_xml = xmltodict.parse(f, dict_constructor=dict)
-    normalized_xml = normalize_dict_keys(raw_xml)
+    normalized_xml = _xml_to_json(path)
     cfdi, version = _get_cfdi_with_version(normalized_xml)
     return _parse_cfdi(cfdi, version)
