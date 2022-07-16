@@ -40,7 +40,7 @@ SETUP_ARGS = {
         "cfdibills": ["VERSION"],
     },
     "url": f"https://github.com/peguerosdc/{MODULE_NAME}",
-    "keywords": ["cfdi", "sat", "client", "mexico"],
+    "keywords": ["cfdi", "facturacion", "sat", "mexico"],
     "install_requires": requirements_from_pip(REQUIREMENTS_FILE),
     "extras_require": {
         "dev": requirements_from_pip("requirements_dev.txt"),

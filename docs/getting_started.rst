@@ -31,7 +31,7 @@ Or you can verify it manually:
 
     import cfdibills
 
-    cfdibills.verify(uuid="folio fiscal", rfc_emisor="re", rfc_receptor="rr", total_facturado=150.00)
+    status = cfdibills.verify(uuid="folio fiscal", rfc_emisor="re", rfc_receptor="rr", total_facturado=150.00)
 
 In both cases, `status`  would look something like this:
 
