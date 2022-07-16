@@ -1,7 +1,8 @@
-name: Upload Python Package
+name: On PyPI
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
 
 jobs:
   deploy:
@@ -23,21 +24,3 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
-
-  codecov:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.9"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e .[test]
-      - name: Generate reports
-        run: |
-          pytest --junitxml=test-results.xml --cov=cfdibills --cov-report=xml tests
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v2
